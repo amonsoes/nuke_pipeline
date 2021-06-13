@@ -198,7 +198,7 @@ class LukeLoader:
         print(seqeval.metrics.classification_report([final_labels], [final_predictions], digits=4))
 
 
-    def inference(self, text):
+    def inference_raw(self, text):
         doc = self.spacy_nlp(text)
 
         entity_spans = []
@@ -209,7 +209,7 @@ class LukeLoader:
                 original_word_spans.append((token_start.i, token_end.i + 1))
 
         inputs = self.tokenizer(text, entity_spans=entity_spans, return_tensors="pt", padding=True)
-        inputs = inputs.to("cuda")
+        inputs = inputs.to(self.device)
         with torch.no_grad():
             outputs = self.model(**inputs)
 
@@ -231,14 +231,48 @@ class LukeLoader:
 
         for token, label in zip(doc, predicted_sequence):
             print(token, label)
+    
+    def inference(self, example):
+
+        entity_spans = []
+        original_word_spans = []
+        for e, token_start in enumerate(example['tokens']):
+            for y, token_end in enumerate(example['tokens'][e:]):
+                entity_spans.append((example['idx'][e], example['idx'][y] + len(token_end)))
+                original_word_spans.append((example['idx'][e], example['idx'][y] + 1))
+
+        inputs = self.tokenizer(example['sentence'], entity_spans=entity_spans, return_tensors="pt", padding=True)
+        inputs = inputs.to(self.device)
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+
+        logits = outputs.logits
+        max_logits, max_indices = logits[0].max(dim=1)
+
+        predictions = []
+        for logit, index, span in zip(max_logits, max_indices, original_word_spans):
+            if index != 0:  # the span is not NIL
+                predictions.append((logit, span, self.model.config.id2label[int(index)]))
+
+        # construct an IOB2 label sequence
+        predicted_sequence = ["O"] * len(example['tokens'])
+        for _, span, label in sorted(predictions, key=lambda o: o[0], reverse=True):
+            if all([o == "O" for o in predicted_sequence[span[0] : span[1]]]):
+                predicted_sequence[span[0]] = "B-" + label
+                if span[1] - span[0] > 1:
+                    predicted_sequence[span[0] + 1 : span[1]] = ["I-" + label] * (span[1] - span[0] - 1)
+
+        return zip(example['tokens'], predicted_sequence, example['labels'])
+        
 
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
+    parser.add_argument('data', type=str, help='set path to data file')
     parser.add_argument('-large', type=lambda x: x in ['true', 'True', '1', 'yes'], default=False,help='decide if you want to transfer large model')
     parser.add_argument('-split_sym', type=str, default=' ', help='set symbol to split data')
     args = parser.parse_args()
     
     pretrained = "studio-ousia/luke-large-finetuned-conll-2003" if args.large else "studio-ousia/luke-base"
-    data = './g.conll.pos_ext.conll'
-    LukeLoader(data=data, pretrained=pretrained)
+    luke = LukeLoader(data=args.data, pretrained=pretrained)
+    luke.inference_raw('Justin Biebs is tha kingg')

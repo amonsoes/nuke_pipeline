@@ -16,7 +16,7 @@ pip install -r requirements.txt
 python3 normalize_btc.py
 ```
 
-This command downloads the BTC and the TwitIE tagger. For usage requirements concerning the tagger,
+This command downloads and transforms the BTC and the TwitIE tagger. For usage requirements concerning the tagger,
 refer to it's README in the twitie-tagger folder.
 
 Depending in your machine, the lexical and syntactical enriching of the BTC MIGHT TAKE A LONG TIME
