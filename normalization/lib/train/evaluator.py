@@ -1,6 +1,6 @@
 import json
 import logging
-import lib
+import normalization.lib as lib
 import csv
 import os 
 

@@ -1,8 +1,8 @@
-from parameters import parser, change_args
-from lib.data.Tweet import Tweet
-from lib.data.DataLoader import create_data
-from lib.data.W2VDataloader import W2VDataLoader
-from lib.data.PhonTransliterator import PhonTransliterator
+from normalization.parameters import parser, change_args
+from normalization.lib.data.Tweet import Tweet
+from normalization.lib.data.DataLoader import create_data
+from normalization.lib.data.W2VDataloader import W2VDataLoader
+from normalization.lib.data.PhonTransliterator import PhonTransliterator
 import logging
 import os
 import copy

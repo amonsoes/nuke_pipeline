@@ -1,6 +1,6 @@
 import torch.nn.functional as F
 from torch.autograd import Variable
-import lib
+import normalization.lib as lib
 import functools
 import torch
 import logging

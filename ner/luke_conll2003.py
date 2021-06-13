@@ -11,19 +11,21 @@ from transformers import LukeTokenizer, LukeForEntitySpanClassification
 
 class LukeLoader:
     
-    def __init__(self, data, pretrained, splitsymbol=' ', batch_size=2):
+    def __init__(self, data, pretrained):
+        self.data = data
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-        print(f'training on {self.device}')
+        print(f'working on {self.device}')
         self.model = LukeForEntitySpanClassification.from_pretrained(pretrained)
         self.model.eval()
         self.model.to(self.device)
         self.tokenizer = LukeTokenizer.from_pretrained(pretrained)
-        self.test_documents = self.load_documents(data, splitsymbol)
-        self.test_examples = self.load_examples(self.test_documents)
-        self.test_on_data(batch_size, )
         self.spacy_nlp = spacy.load("en_core_web_sm")
-
-
+    
+    def evaluate_on_data(self, splitsymbol=' ', batch_size=2):
+        self.test_documents = self.load_documents(self.data, splitsymbol)
+        self.test_examples = self.load_examples(self.test_documents)
+        self.test_on_data(batch_size)
+        
     def load_documents(self, dataset_file, splitsymbol):
         documents, words, labels, sentence_boundaries = [], [], [], []
         with open(dataset_file) as f:
@@ -269,7 +271,7 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument('data', type=str, help='set path to data file')
-    parser.add_argument('-large', type=lambda x: x in ['true', 'True', '1', 'yes'], default=False,help='decide if you want to transfer large model')
+    parser.add_argument('-large_luke', type=lambda x: x in ['true', 'True', '1', 'yes'], default=False,help='decide if you want to transfer large model')
     parser.add_argument('-split_sym', type=str, default=' ', help='set symbol to split data')
     args = parser.parse_args()
     

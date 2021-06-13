@@ -1,4 +1,4 @@
-import lib
+import normalization.lib as lib
 
 
 # Calculate f1 score of a corpus.

@@ -1,7 +1,7 @@
-from lib.data import constants
-from lib.metric import metrics
+#from normalization.lib.data import constants
+from normalization.lib.metric import metrics
 
-import lib.metric
-import lib.model
-import lib.train
-import lib.data
+import normalization.lib.metric
+import normalization.lib.model
+import normalization.lib.train
+#import normalization.lib.data

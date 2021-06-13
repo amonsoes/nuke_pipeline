@@ -1,4 +1,4 @@
-import lib
+import normalization.lib as lib
 import torch
 import logging
 

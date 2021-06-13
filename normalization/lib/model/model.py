@@ -3,7 +3,7 @@ from torch.autograd import Variable
 import torch.nn as nn
 import numpy as np
 import torch
-import lib
+import normalization.lib as lib
 import random
 
 

@@ -11,9 +11,9 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "/home/amon/nuke_pipeline/data/g.conll.pos_ext_small.conll",
-                "-large=True",
-                "-split_sym=\t"
+                "-btc_data=/home/amon/nuke_pipeline/data/g.conll.pos_ext_small.conll",
+                "-large_luke=True",
+                "-btc_split_sym=\t"
             ],
         }
     ]

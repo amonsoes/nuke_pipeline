@@ -1,11 +1,13 @@
 from ner.luke_conll2003 import LukeLoader
+from normalization.HybridSeq2Seq import HybridSeq2Seq
+from normalization.parameters import change_args, parser
 
 class Nuke:
     
-    def __init__(self, luke, hybrid_norm, path, split_sym):
-       self.luke = luke
-       self.hybrid_norm = hybrid_norm
-       self.pair_generator = self.load_examples(path, split_sym)
+    def __init__(self, opt):
+       self.luke = LukeLoader(opt)
+       self.hybrid_norm = HybridSeq2Seq(opt)
+       self.pair_generator = self.load_examples(opt.btc_data, opt.btc_split_sym)
     
     def load_examples(self, path, split_sym):
         with open(path, 'r') as f:
@@ -27,5 +29,16 @@ class Nuke:
     
                     
     def inference(self, example):
-        predictions = 
         
+        words_preds_labels = self.luke.inference(example)
+
+if __name__ == '__main__':
+    
+    # add NUKE and LUKE parameters to imported normalization parameters
+    parser.add_argument('-btc_data', type=str, help='path to btc data')
+    parser.add_argument('-large_luke', type=lambda x: x in ['true', 'True', '1', 'yes'], default=False,help='decide if you want to transfer large model')
+    parser.add_argument('-btc_split_sym', type=str, default='\t', help='operator to split btc data')
+    opt = parser.parse_args()
+    opt = change_args(opt)
+    
+    nuke = Nuke(opt)

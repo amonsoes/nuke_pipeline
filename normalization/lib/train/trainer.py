@@ -2,7 +2,7 @@ import os
 import time
 import torch
 import logging
-import lib
+import normalization.lib as lib
 
 logger = logging.getLogger("train")
 
