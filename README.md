@@ -9,18 +9,17 @@ This is a pipeline for NER in noisy domains
 ```bash
 pip install -r requirements.txt
 ```
-### data:
 
 #### BTC
 
 ```bash
-cd data
-wget https://github.com/GateNLP/broad_twitter_corpus/archive/refs/heads/master.zip
-unzip ./broad_twitter_corpus
-wget http://downloads.gate.ac.uk/twitie/twitie-tagger.zip
-unzip ./twitie-tagger.zip
-
+python3 normalize_btc.py
 ```
+
+This command downloads the BTC and the TwitIE tagger. For usage requirements concerning the tagger,
+refer to it's README in the twitie-tagger folder.
+
+Depending in your machine, the lexical and syntactical enriching of the BTC MIGHT TAKE A LONG TIME
 
 #### LexNorm
 

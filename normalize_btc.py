@@ -22,8 +22,8 @@ class BTCData:
         self.tokenizer = lambda x: x.split()
     
     def process_dir(self):
-        if not os.path.exists('./intermediate/'):
-            os.mkdir('./intermediate/')
+        if not os.path.exists('./broad_twitter_corpus-master/intermediate'):
+            os.mkdir('./broad_twitter_corpus-master/intermediate/')
         savedir = self.dir+'intermediate/'
         for file in self.file_generator:
             orig_path = self.dir + file
@@ -69,9 +69,7 @@ class BTCData:
         rev_ind = rev.find('_')
         true_split = (len(word_pos)-1) - rev_ind
         word, pos = word_pos[:true_split], word_pos[true_split+1:]
-        return (word, pos)
-        
-        
+        return (word, pos)  
     
     def tagged_to_conll(self, path, labelpath, targetpath):
         enum = 0
@@ -99,7 +97,6 @@ class BTCData:
                             continue
     
     def conll_pos_dataset(self):
-        os.chdir('./intermediate')
         for sent_file in self.get_files('txt_tagged.txt'):
             instance = sent_file[0]
             label_file = self.get_file('_labels.txt', instance)
@@ -107,6 +104,14 @@ class BTCData:
             label_path = self.dir + label_file
             target_path = self.dir + sent_file[:-14] + 'pos_ext.conll'
             self.tagged_to_conll(sent_path, label_path, target_path)
+            print(f'processed {sent_file[0]}')
+    
+    def delete_old(self):
+        for _, _, files in os.walk(self.dir):
+            for file in files:
+                if not file.endswith('pos_ext.conll'):
+                    os.system('rm {self.dir + file}')
+                
     
     def chunks_to_tups(self, flair_sent):
         sent = []
@@ -126,45 +131,42 @@ class BTCData:
         return zip(words, pos, chunks)
     
     def append_pos(self):
-        save_dir='./broad_twitter_corpus_master/intermediate/'
+        os.chdir('./twitie-tagger')
+        self.dir='../broad_twitter_corpus-master/intermediate/'
         for file in self.get_files('.conll.txt'):
             loadpath = self.dir + file
             targetpath = self.dir + file + '_tagged.txt'
             os.system(f'java -jar twitie_tag.jar models/gate-EN-twitter.model {loadpath} > {targetpath}')
             
         
-        
-
 if __name__ == '__main__':
-    os.system('cd data')
     
+    os.chdir('./data')
+    print('\nINFO: THIS MIGHT TAKE A WHILE: GET A COFFEE \n')
     print('\nINFO: downloading BTC and twitie-tagger to initialize processing... \n')
     os.system('wget https://github.com/GateNLP/broad_twitter_corpus/archive/refs/heads/master.zip')
     os.system('unzip ./master.zip')
     os.system('rm master.zip')
-    os.system('wget http://downloads.gate.ac.uk/twitie/twitie-tagger.zip')
-    os.system('unzip ./twitie-tagger.zip')
-    os.system('rm twitie-tagger.zip')
+    #os.system('wget http://downloads.gate.ac.uk/twitie/twitie-tagger.zip')
+    #os.system('unzip ./twitie-tagger.zip')
+    #os.system('rm twitie-tagger.zip')
     print('\ndone\n')
     
     print('\nINFO: using tagger to create intermediate tagged files and labels... \n')
-    data = BTCData('./broad_twitter_corpus_master/')
+    data = BTCData('./broad_twitter_corpus-master/')
     data.process_dir()
-    try:
-        BTCData.append_pos()
+    data.append_pos()
+    """
     except:
         raise SystemError('Using java command to use twitie tagger failed. Check your JAVA distribution and refer to the README of the twitie tagger')
+    """
     
-    
-
-    
-    
-
     #path = '/Users/amonsoares/broad_twitter_corpus/intermediate/a.conll.txt_tagged.txt'
     #labelpath = '/Users/amonsoares/broad_twitter_corpus/intermediate/a.conll_labels.txt'
     #target = '/Users/amonsoares/broad_twitter_corpus/intermediate/a_ext.conll'
     
     data.conll_pos_dataset()
+    data.delete_old()
     print('done')
     
     
