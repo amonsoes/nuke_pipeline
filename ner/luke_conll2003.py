@@ -244,7 +244,7 @@ class LukeLoader:
                 entity_spans.append((example['idx'][e], example['idx'][y] + len(token_end)))
                 original_word_spans.append((example['idx'][e], example['idx'][y] + 1))
 
-        inputs = self.tokenizer(example['sentence'], entity_spans=entity_spans, return_tensors="pt", padding=True)
+        inputs = self.tokenizer(example['string'], entity_spans=entity_spans, return_tensors="pt", padding=True)
         inputs = inputs.to(self.device)
         with torch.no_grad():
             outputs = self.model(**inputs)
@@ -278,4 +278,4 @@ if __name__ == '__main__':
     
     pretrained = "studio-ousia/luke-large-finetuned-conll-2003" if args.large else "studio-ousia/luke-base"
     luke = LukeLoader(data=args.data, pretrained=pretrained)
-    luke.inference_raw('Justin Biebs is tha kingg')
+    luke.inference_raw('Millions of family-run #farms hold the key to global #hunger reveals #UN report . http://t.co/9JKaxcMKJ0')

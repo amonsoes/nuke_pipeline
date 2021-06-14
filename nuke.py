@@ -5,7 +5,7 @@ from normalization.parameters import change_args, parser
 class Nuke:
     
     def __init__(self, opt):
-        self.hybrid_norm = HybridSeq2Seq(opt)
+        #self.hybrid_norm = HybridSeq2Seq(opt)
         self.luke = LukeLoader(opt)
         self.pair_generator = self.load_examples(opt.btc_data, opt.btc_split_sym)
     
@@ -14,18 +14,20 @@ class Nuke:
             tokens, labels, idx = [], [], []
             enum = 0
             for line in f:
-                if not line:
+                if line == '\n':
                     yield dict(tokens=tokens,
                                labels=labels,
-                               string=''.join(tokens),
+                               string=' '.join(tokens),
                                idx=idx)
+                    tokens, labels, idx = [], [], []
+                    enum = 0
                 else:
-                    splitted_line = line.split(split_sym)
+                    splitted_line = line.strip().split(split_sym)
                     word = splitted_line[0]
                     tokens.append(word)
                     labels.append(splitted_line[-1])
                     idx.append(enum)
-                    enum += len(word)
+                    enum += (len(word) + 1)
     
                     
     def inference(self, example):
@@ -42,3 +44,5 @@ if __name__ == '__main__':
     opt = change_args(opt)
     
     nuke = Nuke(opt)
+    for example in nuke.pair_generator:
+        nuke.luke.inference(example)
