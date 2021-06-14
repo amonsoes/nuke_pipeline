@@ -13,7 +13,7 @@
             "args": [
                 "-btc_data=/home/amon/nuke_pipeline/datasets/broad_twitter_corpus-master/g.conll",
                 "-logfolder",
-                "-save_dir=hybrid_model",
+                "-save_dir=./normalization/hybrid_model",
                 "-input=hybrid",
                 "-lowercase",
                 "-large_luke=True",

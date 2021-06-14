@@ -49,3 +49,14 @@ def create_model(vocabs, opt, is_char_model=False, is_phon_model=False):
     nParams = sum([p.nelement() for p in model.parameters()])
     logger.info('* number of parameters: %d' % nParams)
     return model, optim
+
+def create_model_from_complete(opt, is_char_model=False, is_phon_model=False):
+    if is_char_model:
+        load_loc = opt.char_model
+    elif is_phon_model:
+        load_loc = opt.phonetic_model
+    else:
+        load_loc = opt.load_from
+    model = torch.load(load_loc)
+    model.eval()
+    return model

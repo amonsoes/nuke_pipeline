@@ -30,16 +30,26 @@ class Trainer(object):
             valid_loss, valid_f1 = self.evaluator.eval(self.eval_data)
             self.optim.update_lr(valid_loss, epoch)
             if epoch % self.opt.save_interval == 0 or epoch==end_epoch:
-                checkpoint = {
-                    'model_state_dict': self.model.state_dict(),
-                    'optim_state_dict': self.optim.state_dict(),
-                    'opt': self.opt,
-                    'epoch': epoch,
-                }
                 model_name = os.path.join(self.opt.save_dir, "model_%d" % epoch)
-                model_name += "_"+self.opt.input+".pt"
-                torch.save(checkpoint, model_name)
-                logger.info('Save model as %s' % model_name)
+                if self.opt.input == 'word' and self.opt.pretrained_emb:
+                    model_name += "_"+self.opt.input+'_pretrainedEmb'
+                else:
+                    model_name += "_"+self.opt.input
+                if not self.opt.save_complete_model:
+                    model_name += '.pt'
+                    checkpoint = {
+                        'model_state_dict': self.model.state_dict(),
+                        'optim_state_dict': self.optim.state_dict(),
+                        'opt': self.opt,
+                        'epoch': epoch,
+                    }
+                    torch.save(checkpoint, model_name)
+                    logger.info('Save model as %s' % model_name)
+                else:
+                    model_name += '_complete.pt'
+                    torch.save(self.model, model_name)
+                    
+                    
 
     def train_epoch(self, epoch):
         if not self.opt.pretrained_emb:
