@@ -1,16 +1,5 @@
 # Extended Stacked TextNorm Encoder-Decoder
 
-### Download and Transform the Lexnorm2015 Dataset
-```bash
-mkdir dataset
-cd dataset
-wget https://github.com/noisy-text/noisy-text.github.io/raw/master/2015/files/lexnorm2015.tgz
-tar -zxvf lexnorm2015.tgz
-cp lexnorm2015/* .
-rm -rf lexnorm2015 lexnorm2015.tgz
-cd ..
-```
-
 ### Epitran add-on "FLITE" Installation
 
 make sure you have `make` installed.
@@ -29,7 +18,7 @@ $ sudo cp lex_lookup /usr/local/bin
 When installing on MacOS and other systems that use a BSD version of cp, some modification to a Makefile must be made in order to install flite-2.0.5 (between steps 3 and 4). Edit main/Makefile and change both instances of cp -pd to cp -pR. Then resume the steps above at step 4.
 
 ### Training a hybrid Seq2Seq model from scratch 
-The hybrid model is a combination of two or threee Seq2Seq models: a word-level one (**S2S**), a secondary character-level trained on pairs of words (spelling with noise augmented data) and a secondary phonological model trained on IPA-transliterated data
+The hybrid model is a combination of two or three Seq2Seq models: a word-level one (**S2S**), a secondary character-level trained on pairs of words (spelling with noise augmented data) and a secondary phonological model trained on IPA-transliterated data
 
 i) Train a word-level model, save results in folder `word_model` 
 ```bash

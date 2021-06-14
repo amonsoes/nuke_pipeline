@@ -12,8 +12,22 @@
             "console": "integratedTerminal",
             "args": [
                 "-btc_data=/home/amon/nuke_pipeline/data/g.conll.pos_ext_small.conll",
+                "-logfolder",
+                "-save_dir=hybrid_model",
+                "-input=hybrid",
+                "-lowercase",
                 "-large_luke=True",
-                "-btc_split_sym=\t"
+                "-btc_split_sym=\t",
+                "-eval",
+                "-bos",
+                "-eos",
+                "-batch_size=32",
+                "-pretrained_emb=False",
+                "-share_vocab",
+                "-data_augm",
+                "-noise_ratio=0.1",
+                "-char_model=./normalization/spelling/model_50_spelling.pt",
+                "-load_from=./normalization/word_model/model_50_word.pt"
             ],
         }
     ]

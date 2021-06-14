@@ -1,5 +1,5 @@
 import re
-import lib
+import normalization.lib as lib
 
 class Tweet(object):
     def __init__(self, input, output, tid, ind, inputidx=None, outputidx=None):
@@ -52,11 +52,11 @@ class Preprocessor:
         filtered = []
         for pos, token in enumerate(self.tokens):
             if self.isUrl(token):
-                filtered.append(lib.constants.URL)
+                filtered.append(lib.data.constants.URL)
             elif token.startswith('#'):
-                filtered.append(lib.constants.HASH)
+                filtered.append(lib.data.constants.HASH)
             elif token.startswith('@'):
-                filtered.append(lib.constants.MENTION)
+                filtered.append(lib.data.constants.MENTION)
             else:
                 filtered.append(token)
                 self.positions.append(pos)

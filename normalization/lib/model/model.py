@@ -16,7 +16,7 @@ class EncoderRNN(nn.Module):
         self.opt = opt
         self.vocab_size = len(self.vocab)
         self.num_directions = 2 if self.opt.brnn else 1
-        self.embedding = nn.Embedding(self.vocab_size, opt.emb_size, padding_idx=lib.constants.PAD)
+        self.embedding = nn.Embedding(self.vocab_size, opt.emb_size, padding_idx=lib.data.constants.PAD)
         self.rnn = getattr(nn, self.opt.rnn_type)(
             input_size=self.opt.emb_size,
             hidden_size=opt.rnn_size // self.num_directions,
@@ -50,7 +50,7 @@ class LuongAttnDecoderRNN(nn.Module):
         self.vocab = vocab
         self.vocab_size = len(self.vocab)
         self.tanh = nn.Tanh()
-        self.embedding =  nn.Embedding(self.vocab_size, opt.emb_size, padding_idx=lib.constants.PAD)
+        self.embedding =  nn.Embedding(self.vocab_size, opt.emb_size, padding_idx=lib.data.constants.PAD)
         self.rnn = getattr(nn, self.opt.rnn_type)(
             input_size=self.opt.emb_size,
             hidden_size=self.opt.rnn_size,

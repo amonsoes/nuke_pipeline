@@ -3,7 +3,7 @@ from .Tweet import Tweet, Preprocessor
 from .Dict import Dict
 from .PhonTransliterator import PhonTransliterator
 import random
-import lib
+import normalization.lib as lib
 import json
 import copy
 
@@ -61,7 +61,7 @@ class DataLoader(object):
                     self.mappings[inp_i[k].lower()] =  set()
                     self.mappings[inp_i[k].lower()].add(inp_o[k].lower())
 
-        if(self.opt.self_tok==lib.constants.SELF):
+        if(self.opt.self_tok==lib.data.constants.SELF):
             for i in range(len(inp_i)):
                 if(inp_i[i].lower()==inp_o[i].lower()):
                     inp_o[i] =  self.opt.self_tok
@@ -150,6 +150,7 @@ class DataLoader(object):
             7-10) keyboard errors
             11) cut continous
         """
+        word = word.lower()
         i = random.randint(0,len(word)-1)
         if word.endswith('ing'):
             op = random.randint(0, 21)
@@ -256,7 +257,7 @@ def create_datasets(opt):
 
 def read_file(fn, valsplit=None):
     tweets = []
-    with open('dataset/'+fn, 'r') as json_data:
+    with open('./datasets/lexnorm/'+fn, 'r') as json_data:
         data = json.load(json_data)
     for tweet in data:
         src_tweet = tweet['input']

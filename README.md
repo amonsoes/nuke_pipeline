@@ -10,7 +10,7 @@ This is a pipeline for NER in noisy domains
 pip install -r requirements.txt
 ```
 
-#### BTC
+#### Download and transform the BTC
 
 ```bash
 python3 normalize_btc.py
@@ -21,7 +21,18 @@ refer to it's README in the twitie-tagger folder.
 
 Depending in your machine, the lexical and syntactical enriching of the BTC MIGHT TAKE A LONG TIME
 
-#### LexNorm
+### Download the Lexnorm2015 Dataset
+
+```bash
+cd datasets
+mkdir lexnorm
+cd lexnorm
+wget https://github.com/noisy-text/noisy-text.github.io/raw/master/2015/files/lexnorm2015.tgz
+tar -zxvf lexnorm2015.tgz
+cp lexnorm2015/* .
+rm -rf lexnorm2015 lexnorm2015.tgz
+cd ../..
+```
 
 ## Usage
 

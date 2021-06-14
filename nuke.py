@@ -5,9 +5,9 @@ from normalization.parameters import change_args, parser
 class Nuke:
     
     def __init__(self, opt):
-       self.luke = LukeLoader(opt)
-       self.hybrid_norm = HybridSeq2Seq(opt)
-       self.pair_generator = self.load_examples(opt.btc_data, opt.btc_split_sym)
+        self.hybrid_norm = HybridSeq2Seq(opt)
+        self.luke = LukeLoader(opt)
+        self.pair_generator = self.load_examples(opt.btc_data, opt.btc_split_sym)
     
     def load_examples(self, path, split_sym):
         with open(path, 'r') as f:

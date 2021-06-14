@@ -6,14 +6,14 @@ from normalization.lib.data.PhonTransliterator import PhonTransliterator
 import logging
 import os
 import copy
-import lib
+import normalization.lib as lib
 
 class HybridSeq2Seq:
     
     def __init__(self, opt):
         self.opt = opt
-        self.word_model, self.word_optim = self.load_word_model(opt)
         self.char_model, self.char_optim = self.load_char_model(opt)
+        self.word_model, self.word_optim = self.load_word_model(opt)
         if opt.phonetic_model:
             self.phon_model, self.phon_optim = self.load_phon_model(opt)
         else:
@@ -28,6 +28,7 @@ class HybridSeq2Seq:
         
         
     def load_word_model(self, opt):
+        print('\nloading word model...\n')
         if opt.pretrained_emb:
             dloader = W2VDataLoader(path=opt.datapath,
                                     train=opt.traindata,
@@ -52,7 +53,7 @@ class HybridSeq2Seq:
         return model, optim
     
     def load_char_model(self, opt):
-        print('*** Character model ***')
+        print('\nloading char model...\n')
         opt = copy.deepcopy(opt)
         opt.input = 'spelling'
         train_data, valid_data, test_data, vocab, mappings = lib.data.create_datasets(opt)
@@ -70,7 +71,7 @@ class HybridSeq2Seq:
     def load_phon_model(self, opt):
         if not opt.phonetic_model:
             return None
-        print('*** Phonetic model ***')
+        print('\nloading phonetic model...\n')
         opt = copy.deepcopy(opt)
         opt.input = 'phonetic'
         opt.traindata = 'phonetic_data/' + opt.traindata

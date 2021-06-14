@@ -11,8 +11,9 @@ from transformers import LukeTokenizer, LukeForEntitySpanClassification
 
 class LukeLoader:
     
-    def __init__(self, data, pretrained):
-        self.data = data
+    def __init__(self, opt):
+        pretrained = "studio-ousia/luke-large-finetuned-conll-2003" if opt.large_luke else "studio-ousia/luke-base"
+        self.data = opt.btc_data
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         print(f'working on {self.device}')
         self.model = LukeForEntitySpanClassification.from_pretrained(pretrained)

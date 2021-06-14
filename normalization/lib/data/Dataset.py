@@ -1,6 +1,6 @@
 from torch.autograd import Variable
 import torch
-import lib
+import normalization.lib as lib
 import torch
 
 class Dataset(object):
