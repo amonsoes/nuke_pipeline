@@ -244,8 +244,9 @@ class LukeLoader:
         original_word_spans = []
         for e, token_start in enumerate(example['tokens']):
             for y, token_end in enumerate(example['tokens'][e:]):
+                y += e
                 entity_spans.append((example['idx'][e], example['idx'][y] + len(token_end)))
-                original_word_spans.append((example['idx'][e], example['idx'][y] + 1))
+                original_word_spans.append((example['idx'][e], y + 1))
 
         inputs = self.tokenizer(example['string'], entity_spans=entity_spans, return_tensors="pt", padding=True)
         inputs = inputs.to(self.device)
