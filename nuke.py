@@ -44,5 +44,6 @@ if __name__ == '__main__':
     opt = change_args(opt)
     
     nuke = Nuke(opt)
+    nuke.luke.inference_raw('Millions of family-run #farms hold the key to global #hunger reveals #UN report . http://t.co/9JKaxcMKJ0')
     for example in nuke.pair_generator:
         nuke.luke.inference(example)
