@@ -10,8 +10,8 @@ class HybridSeq2Seq:
     
     def __init__(self, opt):
         self.opt = opt
-        self.char_model, self.char_optim = self.load_char_model(opt)
         self.word_model, self.word_optim = self.load_word_model(opt)
+        self.char_model, self.char_optim = self.load_char_model(opt)
         if opt.phonetic_model:
             self.phon_model, self.phon_optim = self.load_phon_model(opt)
         else:

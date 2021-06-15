@@ -150,7 +150,6 @@ class DataLoader(object):
             7-10) keyboard errors
             11) cut continous
         """
-        word = word.lower()
         i = random.randint(0,len(word)-1)
         if word.endswith('ing'):
             op = random.randint(0, 21)

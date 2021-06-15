@@ -47,7 +47,8 @@ class Trainer(object):
                     logger.info('Save model as %s' % model_name)
                 else:
                     model_name += '_complete.pt'
-                    torch.save(self.model, model_name)
+                    model = self.model
+                    torch.save(model, model_name)
                     
                     
 

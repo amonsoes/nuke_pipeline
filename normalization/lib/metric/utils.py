@@ -74,9 +74,11 @@ def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None):
                         confidence = probs.transpose()[0].max()
                         translation = translation.t().tolist()
                         trsl2wrds = lib.metric.to_words(translation, unk_model.encoder.vocab)
-                        if unkowns_file: unkowns_file.writerow([input_words_tokens[i], ''.join(trsl2wrds[0]), confidence])
-                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > 50.0 and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
-                        if input_words_tokens[i]!=pred_tokens[i]: logger.info('secondary model confidence:{}, unk_word:{}, prediction:{}'.format(confidence, input_words_tokens[i], pred_tokens[i]))
+                        if unkowns_file:
+                            unkowns_file.writerow([input_words_tokens[i], ''.join(trsl2wrds[0]), confidence])
+                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > 85.0 and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
+                        if input_words_tokens[i]!=pred_tokens[i]:
+                            logger.info('secondary model confidence:{}, unk_word:{}, prediction:{}'.format(confidence, input_words_tokens[i], pred_tokens[i]))
             ret.append(pred_tokens)
     else:
         ret = copy_unks(input, input_words, pred_words)
@@ -101,43 +103,48 @@ def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, 
                         if unk_model.opt.cuda: unk_src = unk_src.cuda()
                         if unk_model.opt.cuda: src_lens = src_lens.cuda()
                         src_lens = Variable(torch.LongTensor([len(p) for p in unk_src]))
+                        if input_words_tokens[i] == '' or input_words_tokens[i] == ' ':
+                            continue
                         unk_src = unk_src.t()
                         unk_batch = {}
                         unk_batch['src'] = unk_src, src_lens
                         unk_batch['tgt'] = unk_src, src_lens
-                        unk_probs, unk_translation = unk_model.translate(phon_batch)
-                        
-                        # phoneme unk processing
-                        phon_src = phon_model.encoder.vocab.to_indices(phon_model.transliterator(input_words_tokens[i]), eosWord=unk_model.opt.eos, bosWord=unk_model.opt.bos).view(1, -1)
-                        phon_src = torch.cat([unk_src]*phon_model.opt.batch_size)
-                        phon_src = Variable(phon_src)
-                        if input_words_tokens[i] == '' or input_words_tokens[i] == ' ':
-                            continue
-                        phon_src_lens = Variable(torch.LongTensor([len(p) for p in phon_src]))
-                        if phon_model.opt.cuda: phon_src = unk_src.cuda()
-                        if phon_model.opt.cuda: phon_src_lens = src_lens.cuda()
-                        phon_src = phon_src.t()
-                        phon_batch = {}
-                        phon_batch['src'] = phon_src, phon_src_lens
-                        phon_batch['tgt'] = phon_src, phon_src_lens
-                        phon_probs, phon_translation = phon_model.translate(phon_batch)
-                        
-                        #choose max
+                        unk_probs, unk_translation = unk_model.translate(unk_batch)
                         unk_confidence = unk_probs.transpose()[0].max()
-                        phon_confidence = phon_probs.transpose()[0].max()
+                        if unk_confidence < 80.0:
+                            phon_probs, phon_translation = phoneme_model_pred(phon_model, input_words_tokens, i)
+                            phon_confidence = phon_probs.transpose()[0].max()
+                        else:
+                            phon_confidence = 0.0
+                            phon_translation = ''
                         choice ,transl, confidence = max((1, unk_translation, unk_confidence),(0, phon_translation, phon_confidence), key=lambda x: x[2])
                         translation = transl.t().tolist()
                         vocab = unk_model.encoder.vocab if choice == 1 else phon_model.encoder.vocab
                         trsl2wrds = lib.metric.to_words(translation, vocab)
                         if unkowns_file: 
                             unkowns_file.writerow([input_words_tokens[i], ''.join(trsl2wrds[0]), confidence])
-                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > 50.0 and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
+                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > 85.0 and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
                         if input_words_tokens[i]!=pred_tokens[i]: 
                             logger.info('secondary model confidence:{}, unk_word:{}, prediction:{}'.format(confidence, input_words_tokens[i], pred_tokens[i]))
             ret.append(pred_tokens)
     else:
         ret = copy_unks(input, input_words, pred_words)
     return ret
+
+def phoneme_model_pred(phon_model, input_words_tokens, i):
+    phon_src = phon_model.encoder.vocab.to_indices(phon_model.transliterator(input_words_tokens[i]), eosWord=phon_model.opt.eos, bosWord=phon_model.opt.bos).view(1, -1)
+    src_lens = Variable(torch.LongTensor([len(p) for p in phon_src]))
+    phon_src = torch.cat([phon_src]*phon_model.opt.batch_size)
+    phon_src = Variable(phon_src)
+    phon_src_lens = Variable(torch.LongTensor([len(p) for p in phon_src]))
+    if phon_model.opt.cuda: phon_src = phon_src.cuda()
+    if phon_model.opt.cuda: phon_src_lens = src_lens.cuda()
+    phon_src = phon_src.t()
+    phon_batch = {}
+    phon_batch['src'] = phon_src, phon_src_lens
+    phon_batch['tgt'] = phon_src, phon_src_lens
+    phon_probs, phon_translation = phon_model.translate(phon_batch)
+    return phon_probs, phon_translation
 
 
 def copy_unks(input, input_words, pred_words):

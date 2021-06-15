@@ -5,9 +5,9 @@ from normalization.parameters import change_args, parser
 class Nuke:
     
     def __init__(self, opt):
-        #self.hybrid_norm = HybridSeq2Seq(opt)
+        self.hybrid_norm = HybridSeq2Seq(opt)
         self.luke = LukeLoader(opt)
-        self.pair_generator = self.load_examples(opt.btc_data, opt.btc_split_sym)
+        self.example_generator = self.load_examples(opt.btc_data, opt.btc_split_sym)
     
     def load_examples(self, path, split_sym):
         with open(path, 'r') as f:
@@ -44,6 +44,5 @@ if __name__ == '__main__':
     opt = change_args(opt)
     
     nuke = Nuke(opt)
-    #nuke.luke.inference_raw('Millions of family-run #farms hold the key to global #hunger reveals #UN report . http://t.co/9JKaxcMKJ0')
-    for example in nuke.pair_generator:
-        nuke.luke.inference(example)
+    for example in nuke.example_generator:
+        normalized = nuke.hybrid_norm(example['tokens'])[2]
