@@ -12,7 +12,7 @@ logger = logging.getLogger("main")
 
 parser = argparse.ArgumentParser(description='train.py')
 ## Data options
-parser.add_argument('-datapath', default='./dataset/lexnorm/json_data/', help='set path to data dir')
+parser.add_argument('-datapath', default='./datasets/lexnorm/json_data/', help='set path to data dir')
 parser.add_argument('-traindata', default='train_data.json', help='Path to train data file')
 parser.add_argument('-phonetic_data', action='store_true', default=False, help='wether phonetic data is already converted')
 parser.add_argument('-testdata', default='test_truth.json',help='Path to the test data file')
@@ -27,7 +27,7 @@ parser.add_argument('-input', default='word', choices=['word', 'char', 'spelling
                     help='character or word level representation, spelling (character model trained on pairs of words) and hybrid (word+spelling)')
 parser.add_argument('-maxlen', type=int, default=None,help='Maximum source sequence length')
 parser.add_argument('-correct_unique_mappings', action='store_true',default=False, help='Correct unique mappings before training')
-parser.add_argument('-char_model', type=str, default='./normalization/spelling/model_50_spelling.pt', help='Path to the pretrained char level model')
+parser.add_argument('-char_model', type=str, default=None, help='Path to the pretrained char level model')
 parser.add_argument('-phonetic_model', type=str, default=False, help='Path to the pretrained phonetic level model')
 parser.add_argument('-data_augm', action='store_true',default=False, help='Use data augmentation or not')
 ## Model options
@@ -65,7 +65,7 @@ parser.add_argument('-save_interval', type=int, default=-1,help='Save model and 
 parser.add_argument('-seed', type=int, default=3435,help='Random seed')
 parser.add_argument('-logfolder', action='store_true', default=False, help='Log output to file')
 parser.add_argument('-save_dir',default='saving', help='Directory to save model checkpoints')
-parser.add_argument('-load_from', type=str, default='./normalization/word_model/model_50_spelling.pt', help='Path to a model checkpoint')
+parser.add_argument('-load_from', type=str, default=None, help='Path to a model checkpoint')
 ## Inference
 parser.add_argument('-eval', action='store_true',help='Evaluatation only mode')
 parser.add_argument('-interactive', action='store_true',help='Interactive mode')

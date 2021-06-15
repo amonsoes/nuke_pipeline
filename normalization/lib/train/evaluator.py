@@ -17,26 +17,35 @@ class Evaluator(object):
 
     def eval(self, data_iter, pred_file=None):
         self.model.eval()
-        valid_data = lib.data.Dataset(data_iter, self.opt)
-        num_batches = valid_data.num_batches
-        val_iter = valid_data.batches()
+        if not self.opt.pretrained_emb:
+            valid_data = lib.data.Dataset(data_iter, self.opt)
+            num_batches = valid_data.num_batches
+            val_iter = valid_data.batches()
+        else:
+            val_iter = data_iter
+            num_batches = len(val_iter)
         all_inputs, all_preds, all_targets, all_others = [], [], [], []
         total_loss = 0
         for i, batch in enumerate(val_iter):
             tgt, tgt_lens = batch['tgt']
             src, src_lens = batch['src']
-            tids = batch['tid']
-            indices = batch['index']
             outputs = self.model(batch, eval=True)
             mask = lib.metric.sequence_mask(sequence_length=tgt_lens, max_len=tgt.size(0)).transpose(0,1)
             loss, _ = self.model.backward(outputs, tgt, mask, criterion=self.criterion, eval=True, normalize=True)
             probs, predictions = self.model.translate(batch)
             predictions = predictions.t().tolist()
+            src_tens, tgt_tens = src, tgt
             src, tgt = src.data.t().tolist(), tgt.data.t().tolist()
-            src = lib.metric.to_words(src, self.model.encoder.vocab)
-            preds = lib.metric.to_words(predictions, self.model.decoder.vocab)
-            tgt_sent_words = batch['tgt_sent_words']
-            src_sent_words = batch['src_sent_words']
+            if not self.opt.pretrained_emb:
+                src = lib.metric.to_words(src, self.model.encoder.vocab)
+                preds = lib.metric.to_words(predictions, self.model.decoder.vocab)
+                tgt_sent_words = batch['tgt_sent_words']
+                src_sent_words = batch['src_sent_words'] 
+            else:
+                src = lib.metric.to_words_pretrained(src, self.model.encoder.vocab)
+                preds = lib.metric.to_words_pretrained(predictions, self.model.decoder.vocab)
+                tgt_sent_words = [[self.model.decoder.vocab.itos[x] for x in i] for i in tgt_tens.T]
+                src_sent_words = [[self.model.encoder.vocab.itos[x] for x in i] for i in src_tens.T]
 
             if(self.opt.input=='char'):
                 tgt_sent_words = lib.metric.char_to_words(tgt_sent_words)
@@ -59,7 +68,7 @@ class Evaluator(object):
             all_inputs.extend(src_sent_words)
             all_preds.extend(preds)
             all_targets.extend(tgt_sent_words)
-            all_others.extend([x for x in zip(tids, indices, sent_f1)])
+            all_others.extend([x for x in zip( [i for x in range(self.opt.batch_size)],[i for x in range(self.opt.batch_size)], sent_f1)])
             total_loss += loss
 
         valid_loss =  total_loss/float(num_batches)

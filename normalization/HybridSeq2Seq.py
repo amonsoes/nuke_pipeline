@@ -3,8 +3,6 @@ from normalization.lib.data.Tweet import Tweet
 from normalization.lib.data.DataLoader import create_data
 from normalization.lib.data.W2VDataloader import W2VDataLoader
 from normalization.lib.data.PhonTransliterator import PhonTransliterator
-import logging
-import os
 import copy
 import normalization.lib as lib
 

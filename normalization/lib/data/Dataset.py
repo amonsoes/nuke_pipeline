@@ -25,7 +25,7 @@ class Dataset(object):
     def _to_tensor(self, data, return_lens):
         lens = [x.size(0) for x in data]
         max_length = max(lens)
-        out = data[0].new(len(data), max_length).fill_(lib.constants.PAD)
+        out = data[0].new(len(data), max_length).fill_(lib.data.constants.PAD)
         for i in range(len(data)):
             data_length = data[i].size(0)
             out[i].narrow(0, 0, data_length).copy_(data[i])

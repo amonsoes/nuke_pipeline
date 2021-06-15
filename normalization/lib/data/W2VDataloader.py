@@ -17,7 +17,7 @@ class BatchWrapper:
         for batch in self.dl:
             dict_batch = {}
             src = getattr(batch, self.x_var)
-            tgt = y = getattr(batch, self.y_vars)
+            tgt = getattr(batch, self.y_vars)
             src_len = torch.tensor([len([i for i in x if i != 1]) for x in src.T])
             tgt_len = torch.tensor([len([i for i in x if i != 1]) for x in tgt.T])
             dict_batch['src'] = (src, src_len)
@@ -142,6 +142,8 @@ class W2VDataLoader:
         else:
             self.SRC.build_vocab(train, vectors='glove.twitter.27B.200d')
             self.TGT.build_vocab(train)
+        
+        
         self.extract_mapping(train, valid)
         train_iter = torchtext.data.BucketIterator(train, batch_size, sort_within_batch=True,sort=False, train=True, shuffle=True, device=self.device, sort_key=lambda x: len(x.src))
         dev_iter = torchtext.data.BucketIterator(valid, batch_size, sort_within_batch=True, train=True, shuffle=True, device=self.device, sort_key=lambda x: len(x.src))

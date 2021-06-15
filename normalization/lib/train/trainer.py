@@ -27,7 +27,7 @@ class Trainer(object):
             total_loss, total_accuracy = self.train_epoch(epoch)
             logger.info('Train loss: %.2f' % total_loss)
             logger.info('Train total_accuracy: %.2f' % total_accuracy)
-            valid_loss, valid_f1 = self.evaluator.eval(self.eval_data)
+            valid_loss, valid_f1, all_preds = self.evaluator.eval(self.eval_data)
             self.optim.update_lr(valid_loss, epoch)
             if epoch % self.opt.save_interval == 0 or epoch==end_epoch:
                 model_name = os.path.join(self.opt.save_dir, "model_%d" % epoch)
@@ -68,7 +68,7 @@ class Trainer(object):
                 self.model.zero_grad()
                 pad_masks = lib.metric.sequence_mask(sequence_length=tgt_lens, max_len=tgt.size(0)).transpose(0,1)
                 loss, num_corrects = self.model.backward(outputs, tgt, pad_masks, criterion=self.criterion)
-                num_words = (tgt.data.ne(lib.constants.PAD).sum() + src.data.ne(lib.constants.PAD).sum()).item()
+                num_words = (tgt.data.ne(lib.data.constants.PAD).sum() + src.data.ne(lib.data.constants.PAD).sum()).item()
                 num_tgts = tgt_lens.data.sum().item()
                 total_loss += loss
                 total_corrects += num_corrects
@@ -94,7 +94,7 @@ class Trainer(object):
                 self.model.zero_grad()
                 pad_masks = lib.metric.sequence_mask(sequence_length=tgt_lens, max_len=tgt.size(0)).transpose(0,1)
                 loss, num_corrects = self.model.backward(outputs, tgt, pad_masks, criterion=self.criterion)
-                num_words = (tgt.data.ne(lib.constants.PAD).sum() + src.data.ne(lib.constants.PAD).sum()).item()
+                num_words = (tgt.data.ne(lib.data.constants.PAD).sum() + src.data.ne(lib.data.constants.PAD).sum()).item()
                 num_tgts = tgt_lens.data.sum().item()
                 total_loss += loss
                 total_corrects += num_corrects

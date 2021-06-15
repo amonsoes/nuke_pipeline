@@ -9,15 +9,15 @@ logger = logging.getLogger("model")
 
 
 def clean_sentence(sent, remove_unk=False, remove_eos=True, remove_bos=True):
-    if lib.constants.EOS_WORD in sent:
-        sent = sent[:sent.index(lib.constants.EOS_WORD) + 1]
+    if lib.data.constants.EOS_WORD in sent:
+        sent = sent[:sent.index(lib.data.constants.EOS_WORD) + 1]
     if remove_unk:
-        sent = filter(lambda x: x != lib.constants.UNK_WORD, sent)
+        sent = filter(lambda x: x != lib.data.constants.UNK_WORD, sent)
     if remove_eos:
-        if len(sent) > 0 and sent[-1] == lib.constants.EOS_WORD:
+        if len(sent) > 0 and sent[-1] == lib.data.constants.EOS_WORD:
             sent = sent[:-1]
     if remove_bos:
-        if len(sent) > 0 and sent[0] == lib.constants.BOS_WORD:
+        if len(sent) > 0 and sent[0] == lib.data.constants.BOS_WORD:
             sent = sent[1:]
     return sent
 
@@ -26,10 +26,10 @@ def handle_tags(input_words, pred_words):
     assert len(input_words) == len(pred_words)
     ret = []
     for input_tokens, pred_tokens in zip(input_words, pred_words):
-        if lib.constants.URL in pred_tokens or lib.constants.HASH in pred_tokens or lib.constants.MENTION in pred_tokens:
+        if lib.data.constants.URL in pred_tokens or lib.data.constants.HASH in pred_tokens or lib.data.constants.MENTION in pred_tokens:
             sent_length = min(len(input_tokens),len(pred_tokens))
             for i in range(sent_length):
-                if(pred_tokens[i] == lib.constants.URL or pred_tokens[i] == lib.constants.HASH or pred_tokens[i] == lib.constants.MENTION):
+                if(pred_tokens[i] == lib.data.constants.URL or pred_tokens[i] == lib.data.constants.HASH or pred_tokens[i] == lib.data.constants.MENTION):
                     pred_tokens[i] = input_tokens[i]
         ret.append(pred_tokens)
     return ret
@@ -51,10 +51,10 @@ def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None):
         assert len(input) == len(pred_words)
         ret = []
         for input_tokens, input_words_tokens, pred_tokens in zip(input, input_words, pred_words):
-            if lib.constants.UNK_WORD in input_tokens:
+            if lib.data.constants.UNK_WORD in input_tokens:
                 sent_length = min(len(input_tokens),len(pred_tokens))
                 for i in range(sent_length):
-                    if(input_tokens[i]==lib.constants.UNK_WORD):
+                    if(input_tokens[i]==lib.data.constants.UNK_WORD):
                         print('print processing unk')
                         unk_src = unk_model.encoder.vocab.to_indices(input_words_tokens[i],
                                         eosWord=unk_model.opt.eos,bosWord=unk_model.opt.bos).view(1, -1)
@@ -87,10 +87,10 @@ def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, 
         assert len(input) == len(pred_words)
         ret = []
         for input_tokens, input_words_tokens, pred_tokens in zip(input, input_words, pred_words):
-            if lib.constants.UNK_WORD in input_tokens:
+            if lib.data.constants.UNK_WORD in input_tokens:
                 sent_length = min(len(input_tokens),len(pred_tokens))
                 for i in range(sent_length):
-                    if(input_tokens[i]==lib.constants.UNK_WORD):
+                    if(input_tokens[i]==lib.data.constants.UNK_WORD):
                         print('processing unk: ', input_words_tokens[i])
                         #Repeat as many times as the batch size, awful but works
                         
@@ -144,10 +144,10 @@ def copy_unks(input, input_words, pred_words):
     assert len(input) == len(pred_words)
     ret = []
     for input_tokens, input_words_tokens, pred_tokens in zip(input, input_words, pred_words):
-        if lib.constants.UNK_WORD in input_tokens or lib.constants.UNK_WORD in pred_tokens:
+        if lib.data.constants.UNK_WORD in input_tokens or lib.data.constants.UNK_WORD in pred_tokens:
             sent_length = min(len(input_tokens),len(pred_tokens))
             for i in range(sent_length):
-                if(input_tokens[i] == lib.constants.UNK_WORD or pred_tokens[i] == lib.constants.UNK_WORD):
+                if(input_tokens[i] == lib.data.constants.UNK_WORD or pred_tokens[i] == lib.data.constants.UNK_WORD):
                     pred_tokens[i] = input_words_tokens[i]
         ret.append(pred_tokens)
     return ret
@@ -169,6 +169,14 @@ def to_words(sents, dict):
     ret = []
     for sent in sents:
         sent = [dict.itos(id) for id in sent]
+        sent = clean_sentence(sent, remove_unk=False)
+        ret.append(sent)
+    return ret
+
+def to_words_pretrained(sents, vocab):
+    ret = []
+    for sent in sents:
+        sent = [vocab.itos[id] for id in sent]
         sent = clean_sentence(sent, remove_unk=False)
         ret.append(sent)
     return ret

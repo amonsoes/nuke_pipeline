@@ -17,7 +17,7 @@ def f1(inputs, preds, golds, spelling=False):
     else:
         for input_tokens, pred_tokens, oracle_tokens in zip(inputs, preds, golds):
             sent_length = min(len(input_tokens), len(oracle_tokens))
-            while len(pred_tokens) < sent_length : pred_tokens.append(lib.constants.PAD_WORD)
+            while len(pred_tokens) < sent_length : pred_tokens.append(lib.data.constants.PAD_WORD)
             for i in range(sent_length):
                 pred_token = pred_tokens[i]
                 oracle_token = oracle_tokens[i]

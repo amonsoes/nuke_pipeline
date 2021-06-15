@@ -1,12 +1,12 @@
-from parameters import parser, change_args
-from lib.data.Tweet import Tweet
-from lib.data.DataLoader import create_data
-from lib.data.W2VDataloader import W2VDataLoader
-from lib.data.PhonTransliterator import PhonTransliterator
+from normalization.parameters import parser, change_args
+from normalization.lib.data.Tweet import Tweet
+from normalization.lib.data.DataLoader import create_data
+from normalization.lib.data.W2VDataloader import W2VDataLoader
+from normalization.lib.data.PhonTransliterator import PhonTransliterator
 import logging
 import os
 import copy
-import lib
+import normalization.lib as lib
 
 logger = logging.getLogger("main")
 
@@ -156,7 +156,7 @@ def main():
         trainer.train(opt.start_epoch, opt.end_epoch)
         logger.info("=======Eval on test set=============")
         pred_file = os.path.join(opt.save_dir, 'test.pred')
-        test_evaluator.eval(test_data, pred_file=pred_file)
+        #test_evaluator.eval(test_data, pred_file=pred_file)
         logger.info("=======Eval on validation set=============")
         pred_file = os.path.join(opt.save_dir, 'valid.pred')
         evaluator.eval(valid_data, pred_file=pred_file)

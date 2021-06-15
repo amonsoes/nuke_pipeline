@@ -108,7 +108,7 @@ class Seq2Seq(nn.Module):
         src, src_lens = batch['src']
         batch_size = src.size(1)
         assert(batch_size == tgt.size(1))
-        input_seq = Variable(torch.LongTensor([lib.constants.BOS] * batch_size))
+        input_seq = Variable(torch.LongTensor([lib.data.constants.BOS] * batch_size))
         decoder_outputs = Variable(torch.zeros(self.opt.max_train_decode_len, batch_size, self.decoder.vocab_size))
         if self.opt.cuda: input_seq, decoder_outputs = input_seq.cuda(), decoder_outputs.cuda()
         max_tgt_len = tgt.size()[0]
@@ -137,13 +137,13 @@ class Seq2Seq(nn.Module):
         src, src_lens = batch['src']
         batch_size = src.size(1)
         assert (batch_size == tgt.size(1))
-        input_seq = Variable(torch.LongTensor([lib.constants.BOS] * batch_size))
+        input_seq = Variable(torch.LongTensor([lib.data.constants.BOS] * batch_size))
         decoder_outputs = Variable(torch.zeros(self.opt.max_train_decode_len, batch_size, self.decoder.vocab_size))
         if self.opt.cuda: input_seq, decoder_outputs = input_seq.cuda(), decoder_outputs.cuda()
         encoder_outputs, encoder_hidden = self.encoder(src, src_lens.data.tolist())
         decoder_hidden = encoder_hidden
         if self.opt.attention: all_attention_weights = torch.zeros(self.opt.max_train_decode_len, src.size(1), len(src))
-        end_of_batch_pred = np.array([lib.constants.EOS] * len(src_lens))
+        end_of_batch_pred = np.array([lib.data.constants.EOS] * len(src_lens))
         preds = np.ones((self.opt.max_train_decode_len, len(src_lens))) * 2
         probs = np.ones((self.opt.max_train_decode_len, len(src_lens))) * 2
         for t in range(self.opt.max_train_decode_len):
