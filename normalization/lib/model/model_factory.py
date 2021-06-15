@@ -23,7 +23,7 @@ def create_optim(model, opt):
 def create_model(vocabs, opt, is_char_model=False, is_phon_model=False):
     model_state = 'model_state_dict'
     optim_state = 'optim_state_dict'
-    if opt.load_from is not None or (opt.char_model != None and is_char_model) or (opt.phonetic_model != None and is_phon_model):
+    if opt.load_from is not None or (opt.char_model != None and is_char_model) or (opt.phonetic_model != False and is_phon_model):
         if is_char_model:
             load_loc = opt.char_model
         elif is_phon_model:

@@ -62,6 +62,7 @@ def train_phon_model(args):
     opt.input = 'phonetic'
     opt.traindata = 'phonetic_data/' + opt.traindata
     opt.testdata = 'phonetic_data/' + opt.testdata
+    print(f'loading data from {opt.traindata}')
     print('\n creating data for phonetic model. If no phonetic data is provided, this can take a while...\n')
     train_data, valid_data, test_data, vocab, mappings = lib.data.create_datasets(opt)
     phon_model, phon_optim = lib.model.create_model((vocab['src'], vocab['tgt']), opt, is_phon_model = True)
@@ -125,9 +126,9 @@ def main():
         mappings = dloader.mappings
     else:
         train_data, valid_data, test_data, vocab, mappings = lib.data.create_datasets(opt)
+    phon_model = train_phon_model(opt) if opt.input in ['hybrid', 'phonetic'] else None
     model, optim = lib.model.create_model((vocab['src'], vocab['tgt']), opt)
     unk_model = train_char_model(opt) if(opt.input in ['hybrid', 'spelling']) else None
-    phon_model = train_phon_model(opt) if opt.input in ['hybrid', 'phonetic'] and opt.phonetic_model else None
     evaluator = lib.train.Evaluator(model, opt, unk_model, phon_model)
     test_evaluator = lib.train.Evaluator(model, opt, unk_model, phon_model)
     logger.info(model.opt)

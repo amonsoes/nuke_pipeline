@@ -100,9 +100,9 @@ def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, 
                         unk_src = unk_model.encoder.vocab.to_indices(input_words_tokens[i], eosWord=unk_model.opt.eos, bosWord=unk_model.opt.bos).view(1, -1)
                         unk_src = torch.cat([unk_src]*unk_model.opt.batch_size)
                         unk_src = Variable(unk_src)
+                        src_lens = Variable(torch.LongTensor([len(p) for p in unk_src]))
                         if unk_model.opt.cuda: unk_src = unk_src.cuda()
                         if unk_model.opt.cuda: src_lens = src_lens.cuda()
-                        src_lens = Variable(torch.LongTensor([len(p) for p in unk_src]))
                         if input_words_tokens[i] == '' or input_words_tokens[i] == ' ':
                             continue
                         unk_src = unk_src.t()
