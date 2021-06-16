@@ -74,7 +74,7 @@ class LuongAttnDecoderRNN(nn.Module):
         decoder_output = decoder_output.transpose(0,1)
         if self.opt.attention:
             attention_scores = torch.bmm(decoder_output, self.W_a(encoder_outputs).transpose(0,1).transpose(1,2))
-            attention_mask = lib.metric.sequence_mask(src_lens).unsqueeze(1)
+            attention_mask = lib.metric.sequence_mask(src_lens).unsqueeze(1).to(self.device)
             attention_scores.data.masked_fill_(~attention_mask.data, -float('inf'))
             attention_weights = F.softmax(attention_scores.squeeze(1), dim=1).unsqueeze(1)
             context_vector = torch.bmm(attention_weights, encoder_outputs.transpose(0,1))
