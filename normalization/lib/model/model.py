@@ -96,6 +96,7 @@ class LuongAttnDecoderRNN(nn.Module):
 class Seq2Seq(nn.Module):
     def __init__(self, encoder, decoder, opt):
         super(Seq2Seq, self).__init__()
+        self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         self.torch = torch.cuda if opt.cuda else torch
         self.encoder = encoder
         self.decoder = decoder
@@ -112,7 +113,7 @@ class Seq2Seq(nn.Module):
         decoder_outputs = Variable(torch.zeros(self.opt.max_train_decode_len, batch_size, self.decoder.vocab_size))
         if self.opt.cuda: input_seq, decoder_outputs = input_seq.cuda(), decoder_outputs.cuda()
         max_tgt_len = tgt.size()[0]
-        encoder_outputs, encoder_hidden = self.encoder(src, src_lens.data.tolist())
+        encoder_outputs, encoder_hidden = self.encoder(src.to(self.device), src_lens.data.tolist())
         decoder_hidden = encoder_hidden
         use_teacher_forcing = False if eval else random.random() < self.opt.teacher_forcing_ratio
         for t in range(max_tgt_len):
