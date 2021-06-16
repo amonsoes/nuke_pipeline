@@ -46,6 +46,7 @@ class EncoderRNN(nn.Module):
 class LuongAttnDecoderRNN(nn.Module):
     def __init__(self, opt, vocab):
         super(LuongAttnDecoderRNN, self).__init__()
+        self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         self.opt =  opt
         self.vocab = vocab
         self.vocab_size = len(self.vocab)
