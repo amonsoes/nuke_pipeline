@@ -114,11 +114,11 @@ class Seq2Seq(nn.Module):
         decoder_outputs = Variable(torch.zeros(self.opt.max_train_decode_len, batch_size, self.decoder.vocab_size))
         if self.opt.cuda: input_seq, decoder_outputs = input_seq.cuda(), decoder_outputs.cuda()
         max_tgt_len = tgt.size()[0]
-        encoder_outputs, encoder_hidden = self.encoder(src.to(self.device), src_lens.data.tolist())
+        encoder_outputs, encoder_hidden = self.encoder(src, src_lens.data.tolist())
         decoder_hidden = encoder_hidden
         use_teacher_forcing = False if eval else random.random() < self.opt.teacher_forcing_ratio
         for t in range(max_tgt_len):
-            decoder_output, decoder_hidden, attention_weights = self.decoder(input_seq.to(self.device), src_lens, encoder_outputs, decoder_hidden)
+            decoder_output, decoder_hidden, attention_weights = self.decoder(input_seq, src_lens, encoder_outputs, decoder_hidden)
             decoder_outputs[t] = decoder_output
             if use_teacher_forcing:
                 input_seq = tgt[t]
