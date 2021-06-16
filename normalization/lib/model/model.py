@@ -153,6 +153,8 @@ class Seq2Seq(nn.Module):
             prob, token_ids = decoder_output.data.topk(1)
             token_ids = token_ids.squeeze()
             prob = prob.squeeze()
+            preds = preds.cpu()
+            probs = probs.cpu()
             preds[t,:] = token_ids
             probs[t,:] = prob
             input_seq = Variable(token_ids)
