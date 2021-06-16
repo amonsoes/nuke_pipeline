@@ -26,6 +26,19 @@ def handle_tags(input_words, pred_words):
     assert len(input_words) == len(pred_words)
     ret = []
     for input_tokens, pred_tokens in zip(input_words, pred_words):
+        if lib.data.constants.URL in pred_tokens or lib.data.constants.MENTION in pred_tokens:
+            sent_length = min(len(input_tokens),len(pred_tokens))
+            for i in range(sent_length):
+                if(pred_tokens[i] == lib.data.constants.URL or pred_tokens[i] == lib.data.constants.MENTION):
+                    pred_tokens[i] = input_tokens[i]
+        ret.append(pred_tokens)
+    return ret
+
+"""
+def handle_tags(input_words, pred_words):
+    assert len(input_words) == len(pred_words)
+    ret = []
+    for input_tokens, pred_tokens in zip(input_words, pred_words):
         if lib.data.constants.URL in pred_tokens or lib.data.constants.HASH in pred_tokens or lib.data.constants.MENTION in pred_tokens:
             sent_length = min(len(input_tokens),len(pred_tokens))
             for i in range(sent_length):
@@ -33,6 +46,7 @@ def handle_tags(input_words, pred_words):
                     pred_tokens[i] = input_tokens[i]
         ret.append(pred_tokens)
     return ret
+    """
 
 
 def handle_numbers(input_words, pred_words):
