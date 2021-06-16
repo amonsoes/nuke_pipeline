@@ -26,7 +26,7 @@
                 "-data_augm",
                 "-noise_ratio=0.1",
                 "-char_model=./normalization/spelling_modell/model_50_spelling.pt",
-                "-load_from=./normalization/word_model/model_1_word.pt",
+                "-load_from=./normalization/word_model/model_50_word.pt",
                 "-phonetic_data",
                 "-phonetic_model=./normalization/phon_model/model_1_phonetic.pt"
 

@@ -9,6 +9,6 @@ BOS_WORD = '<s>'
 EOS_WORD = '<e>'
 
 URL = '<url>'
-HASH = '<hash>'
+#HASH = '<hash>'
 MENTION = '<mention>'
 SELF = '@self'

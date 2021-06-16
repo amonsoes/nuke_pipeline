@@ -53,6 +53,20 @@ class Preprocessor:
         for pos, token in enumerate(self.tokens):
             if self.isUrl(token):
                 filtered.append(lib.data.constants.URL)
+            elif token.startswith('@'):
+                filtered.append(lib.data.constants.MENTION)
+            else:
+                filtered.append(token)
+                self.positions.append(pos)
+        self.tokens = filtered
+        return
+    """
+    def filter(self):
+        filtered = []
+        for pos, token in enumerate(self.tokens):
+            if self.isUrl(token):
+                filtered.append(lib.data.constants.URL)
+            
             elif token.startswith('#'):
                 filtered.append(lib.data.constants.HASH)
             elif token.startswith('@'):
@@ -62,7 +76,8 @@ class Preprocessor:
                 self.positions.append(pos)
         self.tokens = filtered
         return
-
+    """
+    
     def run(self, tokens, lowercase=False):
         self.tokens = tokens
         self.positions = []
