@@ -118,7 +118,7 @@ class Seq2Seq(nn.Module):
         decoder_hidden = encoder_hidden
         use_teacher_forcing = False if eval else random.random() < self.opt.teacher_forcing_ratio
         for t in range(max_tgt_len):
-            decoder_output, decoder_hidden, attention_weights = self.decoder(input_seq, src_lens, encoder_outputs, decoder_hidden)
+            decoder_output, decoder_hidden, attention_weights = self.decoder(input_seq.to(self.device), src_lens, encoder_outputs.to(self.device), decoder_hidden.to(self.device))
             decoder_outputs[t] = decoder_output
             if use_teacher_forcing:
                 input_seq = tgt[t]
