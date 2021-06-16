@@ -1,6 +1,8 @@
 from ner.luke_conll2003 import LukeLoader
 from normalization.HybridSeq2Seq import HybridSeq2Seq
 from normalization.parameters import change_args, parser
+from metrics.metric import NukeMetric
+
 
 class Nuke:
     
@@ -28,11 +30,35 @@ class Nuke:
                     labels.append(splitted_line[-1])
                     idx.append(enum)
                     enum += (len(word) + 1)
-    
-                    
+                  
     def inference(self, example):
-        
-        words_preds_labels = self.luke.inference(example)
+        example['tokens'] = self.hybrid_norm(example['tokens'])[2][1]
+        example['ner_prediction'] = self.luke.inference(example)
+        return example
+
+    def bypass_inference(self, example):
+        example['ner_prediction'] = self.luke.inference(example['tokens'])
+        return example
+    
+    def process_examples(self, bypass=False):
+        if bypass:
+            for example in self.example_generator:
+                yield self.bypass_inference(example)
+        else:
+            for example in self.example_generator:
+                yield self.inference(example) 
+
+class NukeEvaluator:
+    
+    def __init__(self, nuke, metric):
+        self.nuke = nuke
+        self.metric = metric
+    
+    def get_nuke_scores(self):
+        for example in self.nuke.process_examples():
+            self.metric(example)
+        self.metric.build_scores()
+        return self.metric.get_scores()
 
 if __name__ == '__main__':
     
@@ -44,5 +70,7 @@ if __name__ == '__main__':
     opt = change_args(opt)
     
     nuke = Nuke(opt)
-    for example in nuke.example_generator:
-        normalized = nuke.hybrid_norm(example['tokens'])[2]
+    metric = NukeMetric(['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'O', 'B-ORG', 'I-ORG'])
+    
+    evaluation = NukeEvaluator(nuke, metric)
+    evaluation.get_nuke_scores()

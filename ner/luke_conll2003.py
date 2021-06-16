@@ -269,7 +269,7 @@ class LukeLoader:
                 if span[1] - span[0] > 1:
                     predicted_sequence[span[0] + 1 : span[1]] = ["I-" + label] * (span[1] - span[0] - 1)
 
-        return zip(example['tokens'], predicted_sequence, example['labels'])
+        return predicted_sequence
         
 
 if __name__ == '__main__':
