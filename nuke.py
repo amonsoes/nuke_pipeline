@@ -55,9 +55,12 @@ class NukeEvaluator:
         self.metric = metric
     
     def get_nuke_scores(self):
+        timer = 0
         for example in self.nuke.process_examples():
             self.metric(example)
-        self.metric.build_scores()
+            timer += 1
+            if timer > 2:
+                self.metric.build_scores()
         return self.metric.get_scores()
 
 if __name__ == '__main__':

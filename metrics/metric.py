@@ -1,8 +1,9 @@
-
+import numpy as np
 
 class ClassMetric:
     
     def __init__(self, name):
+        self.eps = np.finfo(float).eps
         self.label = name
         self.true_positive = 0
         self.true_negative = 0
@@ -25,13 +26,13 @@ class ClassMetric:
         return correct
 
     def precision(self):
-        self.precision = self.true_positive / (self.true_positive + self.false_positive)
+        self.precision = self.true_positive / (self.true_positive + self.false_positive + self.eps)
     
     def recall(self):
-        self.recall = self.true_positive / (self.true_positive + self.false_negative)
+        self.recall = self.true_positive / (self.true_positive + self.false_negative+self.eps)
 
     def f1(self):
-        self.f1 = (2 * self.precision * self.recall) / (self.precision + self.recall)
+        self.f1 = (2 * self.precision * self.recall) / (self.precision + self.recall+self.eps)
 
 class NukeMetric:
     
@@ -58,4 +59,5 @@ class NukeMetric:
     
     def get_scores(self):
         return {'accuracy': self.accuracy,
-                'macro-f1': self.macro_f1}
+                'macro-f1': self.macro_f1,
+                'classes' : self.classes}

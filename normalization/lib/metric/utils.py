@@ -69,7 +69,7 @@ def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None):
                 sent_length = min(len(input_tokens),len(pred_tokens))
                 for i in range(sent_length):
                     if(input_tokens[i]==lib.data.constants.UNK_WORD):
-                        print('print processing unk')
+                        print('processing unk: ', input_words_tokens[i])
                         unk_src = unk_model.encoder.vocab.to_indices(input_words_tokens[i],
                                         eosWord=unk_model.opt.eos,bosWord=unk_model.opt.bos).view(1, -1)
                         #Repeat as many times as the batch size, awful but works
