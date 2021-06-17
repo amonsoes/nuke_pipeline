@@ -36,15 +36,19 @@ class ClassMetric:
 
 class NukeMetric:
     
-    def __init__(self, classes):
+    def __init__(self,):
         self.correct = 0
         self.total = 0
-        self.classes = {name:ClassMetric(name) for name in classes}
-        self.seen_labels = set()
+        self.classes = {}
+        self.possible_labels = ['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'O', 'B-ORG', 'I-ORG']
     
     def __call__(self, example):
         for pred, label in zip(example['ner_prediction'], example['labels']):
-            self.seen_labels.add(label)
+            if label not in self.classes.keys():
+                if label in self.possible_labels:
+                    self.classes[label] = ClassMetric(label)
+                else:
+                    continue
             self.total += 1
             for k in self.classes:
                 self.correct += self.classes[k].process_pair(label, pred)
@@ -53,11 +57,11 @@ class NukeMetric:
         self.accuracy = self.correct / self.total
     
     def build_scores(self):
-        for k in self.seen_labels:
+        for k in self.classes:
             self.classes[k].calc_precision()
             self.classes[k].calc_recall()
             self.classes[k].calc_f1()
-        self.macro_f1 = sum([self.classes[k].f1 for k in self.seen_labels]) / len(self.seen_labels)
+        self.macro_f1 = sum([self.classes[k].f1 for k in self.classes]) / len(self.classes)
         self.calc_accuracy()
     
     def get_scores(self):

@@ -61,16 +61,12 @@ class NukeEvaluator:
     def get_nuke_scores(self):
         for example in self.process_examples():
             self.metric(example)
-            self.metric.build_scores()
+        self.metric.build_scores()
         return self.metric.get_scores()
     
     def get_luke_scores(self):
-        num = 0
         for example in self.process_examples(bypass=True):
-            num += 1
             self.metric(example)
-            if num > 5:
-                break
         self.metric.build_scores()
         return self.metric.get_scores()
     
@@ -79,7 +75,7 @@ class NukeEvaluator:
             w.write('RESULTS\n\n')
             w.write(f'MACRO-F1 : {self.metric.macro_f1}\n')
             w.write(f'ACCURACY : {self.metric.accuracy}\n')
-            for k in self.metric.seen_labels:
+            for k in self.metric.classes:
                 w.write(f'\nclass {k}:\n\n')
                 w.write(f'F1: {self.metric.classes[k].f1}\n')
                 w.write(f'PRECISION: {self.metric.classes[k].precision}\n')
@@ -92,7 +88,7 @@ def process_btc(opt):
             if file.endswith('.conll'):
                 path = './datasets/broad_twitter_corpus-master/' + file
                 print(f'processing {path}...\n')
-                metric = NukeMetric(['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'O', 'B-ORG', 'I-ORG'])
+                metric = NukeMetric()
                 evaluator = NukeEvaluator(opt, path, nuke, metric)
                 if opt.bypass:
                     scores = evaluator.get_luke_scores()
