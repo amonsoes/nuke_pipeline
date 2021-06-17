@@ -37,7 +37,7 @@ class Nuke:
         return example
 
     def bypass_inference(self, example):
-        example['ner_prediction'] = self.luke.inference(example['tokens'])
+        example['ner_prediction'] = self.luke.inference(example)
         return example
     
     def process_examples(self, bypass=False):
@@ -55,22 +55,33 @@ class NukeEvaluator:
         self.metric = metric
     
     def get_nuke_scores(self):
-        timer = 0
         for example in self.nuke.process_examples():
             self.metric(example)
-            timer += 1
-            if timer > 2:
-                self.metric.build_scores()
+            self.metric.build_scores()
         return self.metric.get_scores()
     
-    def to_file(self, path='./results'):
+    def get_luke_scores(self):
+        num = 0
+        for example in self.nuke.process_examples(bypass=True):
+            num += 1
+            self.metric(example)
+            if num > 5:
+                break
+        self.metric.build_scores()
+        return self.metric.get_scores()
+    
+    def to_file(self, path='./results.txt'):
         with open(path, 'w') as w:
+            w.write('RESULTS\n\n')
             w.write(f'MACRO-F1 : {self.metric.macro_f1}\n')
             w.write(f'ACCURACY : {self.metric.accuracy}\n')
-            for k in self.metric.classes:
-                w.write('\nclass {k}:\n\n')
+            for k in self.metric.seen_labels:
+                w.write(f'\nclass {k}:\n\n')
+                w.write(f'F1: {self.metric.classes[k].f1}\n')
                 w.write(f'PRECISION: {self.metric.classes[k].precision}\n')
                 w.write(f'RECALL: {self.metric.classes[k].recall}\n')
+    
+        
 
 if __name__ == '__main__':
     
@@ -85,5 +96,5 @@ if __name__ == '__main__':
     metric = NukeMetric(['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'O', 'B-ORG', 'I-ORG'])
     
     evaluation = NukeEvaluator(nuke, metric)
-    scores = evaluation.get_nuke_scores()
+    scores = evaluation.get_luke_scores()
     evaluation.to_file()

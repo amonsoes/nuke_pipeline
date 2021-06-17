@@ -25,13 +25,13 @@ class ClassMetric:
                 self.false_positive += 1
         return correct
 
-    def precision(self):
+    def calc_precision(self):
         self.precision = self.true_positive / (self.true_positive + self.false_positive + self.eps)
     
-    def recall(self):
+    def calc_recall(self):
         self.recall = self.true_positive / (self.true_positive + self.false_negative+self.eps)
 
-    def f1(self):
+    def calc_f1(self):
         self.f1 = (2 * self.precision * self.recall) / (self.precision + self.recall+self.eps)
 
 class NukeMetric:
@@ -40,22 +40,25 @@ class NukeMetric:
         self.correct = 0
         self.total = 0
         self.classes = {name:ClassMetric(name) for name in classes}
+        self.seen_labels = set()
     
     def __call__(self, example):
         for pred, label in zip(example['ner_prediction'], example['labels']):
+            self.seen_labels.add(label)
             self.total += 1
             for k in self.classes:
                 self.correct += self.classes[k].process_pair(label, pred)
                 
-    def accuracy(self):
+    def calc_accuracy(self):
         self.accuracy = self.correct / self.total
     
     def build_scores(self):
-        for k in self.classes:
-            self.classes[k].precision()
-            self.classes[k].recall()
-            self.classes[k].f1()
-        self.macro_f1 = sum([self.classes[k].f1 for k in self.classes]) / len(self.classes)
+        for k in self.seen_labels:
+            self.classes[k].calc_precision()
+            self.classes[k].calc_recall()
+            self.classes[k].calc_f1()
+        self.macro_f1 = sum([self.classes[k].f1 for k in self.seen_labels]) / len(self.seen_labels)
+        self.calc_accuracy()
     
     def get_scores(self):
         return {'accuracy': self.accuracy,

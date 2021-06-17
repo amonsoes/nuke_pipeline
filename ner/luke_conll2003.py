@@ -239,7 +239,7 @@ class LukeLoader:
             print(token, label)
     
     def inference(self, example):
-
+        print(f'processing: {example}\n')
         entity_spans = []
         original_word_spans = []
         for e, token_start in enumerate(example['tokens']):
