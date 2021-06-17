@@ -72,7 +72,10 @@ parser.add_argument('-interactive', action='store_true',help='Interactive mode')
 parser.add_argument('-max_train_decode_len', type=int, default=50,help='Max decoding length during training')
 ## pretrained embs
 parser.add_argument('-pretrained_emb',type=lambda x: True if x in ['True', 'true', 'yes','1'] else False, default=False)
+## NUKE
+parser.add_argument('-bypass', action='store_true' , help='bypass the normalizers to only use LUKE')
 #opt = parser.parse_args()
+
 
 
 def change_args(opt):

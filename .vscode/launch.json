@@ -27,6 +27,7 @@
                 "-noise_ratio=0.1",
                 "-char_model=./normalization/spelling_modell/model_50_spelling.pt",
                 "-load_from=./normalization/word_model/model_50_word.pt",
+                "-bypass"
             ],
         }
     ]
