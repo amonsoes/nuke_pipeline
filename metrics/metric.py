@@ -20,7 +20,7 @@ class ClassMetric:
         else:
             if label == pred:
                 self.true_negative += 1
-            else:
+            elif self.label == pred:
                 self.false_positive += 1
         return correct
 

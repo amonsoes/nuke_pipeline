@@ -246,7 +246,7 @@ class LukeLoader:
             for y, token_end in enumerate(example['tokens'][e:]):
                 y += e
                 entity_spans.append((example['idx'][e], example['idx'][y] + len(token_end)))
-                original_word_spans.append((example['idx'][e], y + 1))
+                original_word_spans.append((e, y + 1))
 
         inputs = self.tokenizer(example['string'], entity_spans=entity_spans, return_tensors="pt", padding=True)
         inputs = inputs.to(self.device)
@@ -276,10 +276,10 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument('-btc_data', type=str, help='set path to data file')
-    parser.add_argument('-large_luke', type=lambda x: x in ['true', 'True', '1', 'yes'], default=False,help='decide if you want to transfer large model')
+    parser.add_argument('-large_luke', type=lambda x: x in ['true', 'True', '1', 'yes'], default=True,help='decide if you want to transfer large model')
     parser.add_argument('-split_sym', type=str, default='\t', help='set symbol to split data')
     args = parser.parse_args()
     
-    pretrained = "studio-ousia/luke-large-finetuned-conll-2003"
+    
     luke = LukeLoader(args)
-    luke.inference_raw('Millions of family-run #farms hold the key to global #hunger reveals #UN report . http://t.co/9JKaxcMKJ0')
+    luke.inference_raw('Cousin of Reeva Steenkamp says #Pistorius should pay for what he has done . http://t.co/7gSdzwFjJ6')
