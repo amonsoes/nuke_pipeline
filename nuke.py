@@ -62,6 +62,15 @@ class NukeEvaluator:
             if timer > 2:
                 self.metric.build_scores()
         return self.metric.get_scores()
+    
+    def to_file(self, path='./results'):
+        with open(path, 'w') as w:
+            w.write(f'MACRO-F1 : {self.metric.macro_f1}\n')
+            w.write(f'ACCURACY : {self.metric.accuracy}\n')
+            for k in self.metric.classes:
+                w.write('\nclass {k}:\n\n')
+                w.write(f'PRECISION: {self.metric.classes[k].precision}\n')
+                w.write(f'RECALL: {self.metric.classes[k].recall}\n')
 
 if __name__ == '__main__':
     
@@ -76,4 +85,5 @@ if __name__ == '__main__':
     metric = NukeMetric(['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'O', 'B-ORG', 'I-ORG'])
     
     evaluation = NukeEvaluator(nuke, metric)
-    evaluation.get_nuke_scores()
+    scores = evaluation.get_nuke_scores()
+    evaluation.to_file()
