@@ -57,11 +57,15 @@ class NukeEvaluator:
                 yield self.nuke.bypass_inference(example)
         else:
             for example in self.example_generator:
+                
                 yield self.nuke.inference(example)
     
     def get_nuke_scores(self):
         for example in self.process_examples():
-            self.metric(example)
+            try:
+                self.metric(example)
+            except:
+                continue
         self.metric.build_scores()
         return self.metric.get_scores()
     
