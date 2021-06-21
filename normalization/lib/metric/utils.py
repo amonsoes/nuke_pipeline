@@ -60,10 +60,14 @@ def handle_numbers(input_words, pred_words):
         ret.append(pred_tokens)
     return ret
 
-def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None):
+def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None, is_nuke=False):
     if(unk_model):
         assert len(input) == len(pred_words)
         ret = []
+        if is_nuke:
+            input = [input[0]]
+            input_words = [input_words[0]]
+            pred_words = [pred_words[0]]
         for input_tokens, input_words_tokens, pred_tokens in zip(input, input_words, pred_words):
             if lib.data.constants.UNK_WORD in input_tokens:
                 sent_length = min(len(input_tokens),len(pred_tokens))
@@ -98,10 +102,14 @@ def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None):
         ret = copy_unks(input, input_words, pred_words)
     return ret
 
-def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, unkowns_file=None):
+def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, unkowns_file=None, is_nuke=False):
     if(unk_model):
         assert len(input) == len(pred_words)
         ret = []
+        if is_nuke:
+            input = [input[0]]
+            input_words = [input_words[0]]
+            pred_words = [pred_words[0]]
         for input_tokens, input_words_tokens, pred_tokens in zip(input, input_words, pred_words):
             if lib.data.constants.UNK_WORD in input_tokens:
                 sent_length = min(len(input_tokens),len(pred_tokens))

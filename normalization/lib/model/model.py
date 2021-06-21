@@ -71,7 +71,7 @@ class LuongAttnDecoderRNN(nn.Module):
 
     def forward(self, src, src_lens, encoder_outputs, decoder_hidden):
         emb = self.embedding(src.unsqueeze(0))
-        decoder_output, self.decoder_hidden = self.rnn(emb, decoder_hidden)
+        decoder_output, self.decoder_hidden = self.rnn(emb, decoder_hidden) #if len(src) > 1 else self.rnn(emb.unsqueeze(0), decoder_hidden)
         decoder_output = decoder_output.transpose(0,1)
         if self.opt.attention:
             attention_scores = torch.bmm(decoder_output, self.W_a(encoder_outputs).transpose(0,1).transpose(1,2))

@@ -3,7 +3,8 @@ import normalization.lib as lib
 
 # Calculate f1 score of a corpus.
 def f1(inputs, preds, golds, spelling=False):
-    assert len(preds) == len(golds) == len(inputs)
+    if not len(preds) == len(golds) == len(inputs):
+        golds = [golds[0]]
     correct_norm, total_norm, total_nsw = 0.0, 0.0, 0.0
     if(spelling): #for spelling we got only one word each time
         for input_token, pred_token, oracle_token in zip(inputs, preds, golds):

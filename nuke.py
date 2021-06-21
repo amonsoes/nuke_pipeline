@@ -8,11 +8,12 @@ import os
 class Nuke:
     
     def __init__(self, opt):
+        opt.is_nuke = True
         self.hybrid_norm = HybridSeq2Seq(opt)
         self.luke = LukeLoader(opt)
                   
     def inference(self, example):
-        example['tokens'] = self.hybrid_norm(example['tokens'])[2][1]
+        example['tokens'] = self.hybrid_norm(example['tokens'])[2][0]
         example['ner_prediction'] = self.luke.inference(example)
         return example
 

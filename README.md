@@ -4,10 +4,25 @@ This is a pipeline for NER in noisy domains
 
 ## Requirements
 
+Currently, LUKE is only available on the master branch of Huggingface Transformers:
+
+```bash
+pip3 install seqeval git+https://github.com/huggingface/transformers.git
+```
+
+Remaining package requirements:
+
 
 ```bash
 pip install -r requirements.txt
 ```
+
+Once SpaCy is install, install english model:
+
+```bash
+python3 -m spacy download en_core_web_sm
+```
+
 
 #### Install FLITE
 
@@ -70,14 +85,19 @@ python main.py -logfolder -save_dir phon_model -gpu 0 -input phonetic -data_augm
 #### Run NUKE on data
 
 ```bash
-python3 nuke.py -btc_data path/to/data -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt
+python3 nuke.py -btc_data path/to/data -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True -noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt -lowercase
 ```
+
+To run on GPU, add option -gpu 0
+
 ### Run LUKE on data
 
 ```bash
 cd ner
-python3 nuke.py -btc_data path/to/data -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt -bypass
+python3 nuke.py -btc_data path/to/data -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True -noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt -lowercase -bypass
 ```
+
+To run on GPU, add option -gpu 0
 
 ### Additional Features
 
