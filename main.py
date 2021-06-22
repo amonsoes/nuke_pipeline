@@ -127,7 +127,7 @@ def main():
         mappings = dloader.mappings
     else:
         train_data, valid_data, test_data, vocab, mappings = lib.data.create_datasets(opt)
-    phon_model = train_phon_model(opt) if opt.input in ['hybrid', 'phonetic'] else None
+    phon_model = train_phon_model(opt) if opt.input in ['hybrid', 'phonetic'] and opt.phonetic_model == True else None
     model, optim = lib.model.create_model((vocab['src'], vocab['tgt']), opt)
     unk_model = train_char_model(opt) if(opt.input in ['hybrid', 'spelling']) else None
     evaluator = lib.train.Evaluator(model, opt, unk_model, phon_model)
