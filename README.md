@@ -99,6 +99,15 @@ python3 nuke.py -btc_data path/to/data -logfolder -save_dir ./normalization/hybr
 
 To run on GPU, add option -gpu 0
 
+### Evaluate the normalizer module
+
+```bash
+python main.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -phonetic_model ./normalization/phon_model/model_50_phonetic.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -phonetic_data
+
+```
+
+To run on GPU, add option -gpu 0
+
 ### Additional Features
 
 Download and enrich BTC with syntactic and lexical information

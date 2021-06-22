@@ -110,6 +110,7 @@ def train_phon_model(args):
 def main():
     opt = parser.parse_args()
     opt = change_args(opt)
+    opt.is_nuke = False
     logging.basicConfig(filename=os.path.join(opt.save_dir, 'output.log') if opt.logfolder else None, level=logging.INFO)
     if opt.pretrained_emb:
         dloader = W2VDataLoader(path=opt.datapath,
