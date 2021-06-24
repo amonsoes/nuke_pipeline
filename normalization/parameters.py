@@ -70,6 +70,7 @@ parser.add_argument('-load_from', type=str, default=None, help='Path to a model 
 parser.add_argument('-eval', action='store_true',help='Evaluatation only mode')
 parser.add_argument('-interactive', action='store_true',help='Interactive mode')
 parser.add_argument('-max_train_decode_len', type=int, default=50,help='Max decoding length during training')
+parser.add_argument('-confidence_tres', type=int, default=95, help='confidence treshold of the additional models')
 ## pretrained embs
 parser.add_argument('-pretrained_emb',type=lambda x: True if x in ['True', 'true', 'yes','1'] else False, default=False)
 ## NUKE

@@ -57,9 +57,9 @@ class Evaluator(object):
             preds = lib.metric.handle_tags(src_sent_words, preds)
             
             if self.phon_model != None:
-                preds = lib.metric.handle_unk_with_phon(src, src_sent_words, preds, self.unk_model, self.phon_model, unk_file, self.opt.is_nuke)
+                preds = lib.metric.handle_unk_with_phon(src, src_sent_words, preds, self.unk_model, self.phon_model, unk_file, self.opt.is_nuke, self.opt.confidence_tres)
             else:
-                preds = lib.metric.handle_unk(src, src_sent_words, preds, self.unk_model, unk_file, self.opt.is_nuke)
+                preds = lib.metric.handle_unk(src, src_sent_words, preds, self.unk_model, unk_file, self.opt.is_nuke, self.opt.confidence_tres)
             if(self.opt.self_tok):
                 preds = lib.metric.clean_self_toks(src_sent_words, preds, self.opt.self_tok)
                 tgt_sent_words = lib.metric.clean_self_toks(src_sent_words, tgt_sent_words, self.opt.self_tok)

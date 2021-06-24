@@ -60,7 +60,7 @@ def handle_numbers(input_words, pred_words):
         ret.append(pred_tokens)
     return ret
 
-def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None, is_nuke=False):
+def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None, is_nuke=False, confidence_tres=95):
     if(unk_model):
         assert len(input) == len(pred_words)
         ret = []
@@ -94,7 +94,7 @@ def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None, is_
                         trsl2wrds = lib.metric.to_words(translation, unk_model.encoder.vocab)
                         if unkowns_file:
                             unkowns_file.writerow([input_words_tokens[i], ''.join(trsl2wrds[0]), confidence])
-                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > 85.0 and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
+                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > confidence_tres and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
                         if input_words_tokens[i]!=pred_tokens[i]:
                             logger.info('secondary model confidence:{}, unk_word:{}, prediction:{}'.format(confidence, input_words_tokens[i], pred_tokens[i]))
             ret.append(pred_tokens)
@@ -102,7 +102,7 @@ def handle_unk(input, input_words, pred_words, unk_model, unkowns_file=None, is_
         ret = copy_unks(input, input_words, pred_words)
     return ret
 
-def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, unkowns_file=None, is_nuke=False):
+def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, unkowns_file=None, is_nuke=False, confidence_tres=95):
     if(unk_model):
         assert len(input) == len(pred_words)
         ret = []
@@ -145,7 +145,7 @@ def handle_unk_with_phon(input, input_words, pred_words, unk_model, phon_model, 
                         trsl2wrds = lib.metric.to_words(translation, vocab)
                         if unkowns_file: 
                             unkowns_file.writerow([input_words_tokens[i], ''.join(trsl2wrds[0]), confidence])
-                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > 85.0 and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
+                        pred_tokens[i] = ''.join(trsl2wrds[0]) if confidence > confidence_tres and input_words_tokens[i].isalpha()  else input_words_tokens[i] 
                         if input_words_tokens[i]!=pred_tokens[i]: 
                             logger.info('secondary model confidence:{}, unk_word:{}, prediction:{}'.format(confidence, input_words_tokens[i], pred_tokens[i]))
             ret.append(pred_tokens)
