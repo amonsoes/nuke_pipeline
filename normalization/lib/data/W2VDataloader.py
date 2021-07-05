@@ -4,6 +4,7 @@ import csv
 import json
 import re
 
+from .constants import *
 from collections import defaultdict
 
 class BatchWrapper:
@@ -124,8 +125,8 @@ class W2VDataLoader:
         # TODO: make bos and eos appearance separable
         self.mappings = defaultdict(set)
         if bos_eos:
-            self.SRC = torchtext.data.Field(sequential=True, use_vocab=True, init_token='<s>', eos_token='<e>', lower=lowercase)
-            self.TGT = torchtext.data.Field(sequential=True, use_vocab=True, init_token='<s>', eos_token='<e>')
+            self.SRC = torchtext.data.Field(sequential=True, use_vocab=True, init_token=BOS_WORD, eos_token=EOS_WORD, lower=lowercase)
+            self.TGT = torchtext.data.Field(sequential=True, use_vocab=True, init_token=BOS_WORD, eos_token=EOS_WORD)
         else:
             self.SRC = torchtext.data.Field(sequential=True, use_vocab=True)
             self.TGT = torchtext.data.Field(sequential=True, use_vocab=True)  
@@ -137,10 +138,10 @@ class W2VDataLoader:
                                                      fields=fields)
         train, valid = train.split(split_ratio=valsplit)
         if shared_vocab:
-            self.SRC.build_vocab(train, vectors='glove.twitter.27B.200d')
+            self.SRC.build_vocab(train, valid, vectors='glove.twitter.27B.200d')
             self.TGT.vocab = self.SRC.vocab
         else:
-            self.SRC.build_vocab(train, vectors='glove.twitter.27B.200d')
+            self.SRC.build_vocab(train, valid, vectors='glove.twitter.27B.200d')
             self.TGT.build_vocab(train)
         
         

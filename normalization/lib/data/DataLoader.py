@@ -2,6 +2,8 @@
 from .Tweet import Tweet, Preprocessor
 from .Dict import Dict
 from .PhonTransliterator import PhonTransliterator
+from .constants import *
+import torch
 import random
 import normalization.lib as lib
 import json
@@ -28,9 +30,24 @@ class DataLoader(object):
                     mapping = self.mappings.get(wi)
                     if mapping and len(mapping)==1 and list(mapping)[0]!=wi:
                         input[index] = list(mapping)[0]
-            tweet.set_inputidx(self.source_vocab.to_indices(input, bosWord=self.opt.bos, eosWord=self.opt.eos))
-            tweet.set_outputidx(self.target_vocab.to_indices(tweet.output, bosWord=self.opt.bos, eosWord=self.opt.eos))
+            if self.opt.pretrained_emb and (self.opt.is_word_model or self.opt.is_inference):
+                tweet.set_inputidx(self.to_indicies_pretrained(input, self.source_vocab, bosWord=self.opt.bos, eosWord=self.opt.eos))
+                tweet.set_outputidx(self.to_indicies_pretrained(tweet.output, self.target_vocab, bosWord=self.opt.bos, eosWord=self.opt.eos))
+            else:
+                tweet.set_inputidx(self.source_vocab.to_indices(input, bosWord=self.opt.bos, eosWord=self.opt.eos))
+                tweet.set_outputidx(self.target_vocab.to_indices(tweet.output, bosWord=self.opt.bos, eosWord=self.opt.eos))
+    
 
+    def to_indicies_pretrained(self, labels, vocab, bosWord=False, eosWord=False):
+        vec = []
+        if bosWord:
+            vec += [vocab.stoi[BOS_WORD]]
+        unk = vocab.stoi[UNK_WORD]
+        vec += [vocab.stoi.get(label, unk) for label in labels]
+        if eosWord:
+            vec += [vocab.stoi[EOS_WORD]]
+        return torch.LongTensor(vec)
+        
     def encode_tweets(self):
         self.tweets_toIdx()
         src_sents, tgt_sents, tgt_sents_words, src_sents_words, indices, tids = [], [], [], [], [], []

@@ -9,6 +9,8 @@ import normalization.lib as lib
 class HybridSeq2Seq:
     
     def __init__(self, opt):
+        opt.is_word_model = False
+        opt.is_inference = False
         self.opt = opt
         self.word_model, self.word_optim = self.load_word_model(opt)
         self.char_model, self.char_optim = self.load_char_model(opt)
@@ -27,6 +29,8 @@ class HybridSeq2Seq:
         
     def load_word_model(self, opt):
         print('\nloading word model...\n')
+        opt = copy.deepcopy(opt)
+        opt.is_word_model = True
         if not opt.load_complete_model:
             if opt.pretrained_emb:
                 dloader = W2VDataLoader(path=opt.datapath,
@@ -39,7 +43,7 @@ class HybridSeq2Seq:
                                         gpu=opt.gpu,
                                         valsplit=opt.valsplit)
                 train_data, valid_data, test_data = dloader.return_iterators()
-                vocab = {'src': dloader.SRC.vocab, 'tgt': dloader.TGT.vocab}
+                self.vocab = {'src': dloader.SRC.vocab, 'tgt': dloader.TGT.vocab}
                 self.mappings = dloader.mappings
             else:
                 train_data, valid_data, test_data, self.vocab, self.mappings = lib.data.create_datasets(opt)

@@ -5,7 +5,7 @@ import torch
 
 class Dataset(object):
     def __init__(self, data, opt):
-        if opt.pretrained_emb:
+        if opt.pretrained_emb and not opt.is_inference:
             self.DATA_KEYS = ['src', 'tgt']
             self.size = len(data)
             setattr(self, 'src', list(data.src))

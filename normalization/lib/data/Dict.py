@@ -83,6 +83,8 @@ class Dict(object):
             vec += [self.stoi(EOS_WORD)]
         return torch.LongTensor(vec)
 
+        
+
     def to_labels(self, idx, stop):
         labels = []
         for i in idx:

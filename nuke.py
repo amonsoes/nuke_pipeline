@@ -57,10 +57,7 @@ class NukeEvaluator:
                 yield self.nuke.bypass_inference(example)
         else:
             for example in self.example_generator:
-                try:
-                    yield self.nuke.inference(example)
-                except:
-                    continue
+                yield self.nuke.inference(example)
     
     def get_nuke_scores(self):
         for example in self.process_examples():
@@ -90,6 +87,7 @@ class NukeEvaluator:
     
 def process_btc(opt):
     nuke = Nuke(opt)
+    opt.is_inference = True
     for _,_, files in os.walk('./datasets/broad_twitter_corpus-master'):
         for file in files:
             if file.endswith('.conll'):

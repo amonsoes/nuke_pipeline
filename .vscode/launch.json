@@ -21,12 +21,12 @@
                 "-bos",
                 "-eos",
                 "-batch_size=32",
-                "-pretrained_emb=False",
+                "-pretrained_emb=True",
                 "-share_vocab",
                 "-data_augm",
                 "-noise_ratio=0.1",
                 "-char_model=./normalization/spelling_modell/model_50_spelling.pt",
-                "-load_from=./normalization/word_model/model_50_word.pt",
+                "-load_from=./word_model/model_50_word_pretrainedEmb.pt",
             ],
         }
     ]

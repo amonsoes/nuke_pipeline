@@ -17,13 +17,14 @@ class Evaluator(object):
 
     def eval(self, data_iter, pred_file=None):
         self.model.eval()
-        if not self.opt.pretrained_emb:
-            valid_data = lib.data.Dataset(data_iter, self.opt)
-            num_batches = valid_data.num_batches
-            val_iter = valid_data.batches()
-        else:
+        """        
+        if self.opt.pretrained_emb:
             val_iter = data_iter
             num_batches = len(val_iter)
+        else:"""
+        valid_data = lib.data.Dataset(data_iter, self.opt)
+        num_batches = valid_data.num_batches
+        val_iter = valid_data.batches()
         all_inputs, all_preds, all_targets, all_others = [], [], [], []
         total_loss = 0
         for i, batch in enumerate(val_iter):
