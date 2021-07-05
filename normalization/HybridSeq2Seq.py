@@ -8,6 +8,11 @@ import normalization.lib as lib
 
 class HybridSeq2Seq:
     
+    '''class to create Hybrid Seq2Seq Normalizers. Char model is necessary,
+    phonetic model is optional. has 3 methods to load the corresponding normalizers models.
+    Init accepts opt from arguments to pass CLI args to the constructors. See parameters.py for opt
+    '''
+    
     def __init__(self, opt):
         opt.is_word_model = False
         opt.is_inference = False
@@ -101,8 +106,10 @@ class HybridSeq2Seq:
         return phon_model, phon_optim
         
 if __name__ == '__main__':
+    
+    print('start test for Hybrid Seq2Seq...')
     opt = parser.parse_args()
     opt = change_args(opt)
     normalizer = HybridSeq2Seq(opt)
     prediction = normalizer(['Ight', 'imma', 'head', 'out'])
-    print('donezies')
+    print('test finished.')

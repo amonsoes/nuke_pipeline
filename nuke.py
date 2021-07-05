@@ -7,6 +7,11 @@ import os
 
 class Nuke:
     
+    '''loads instance of NUKE with a hybrid normalizer and NER-model LUKE
+    Init accepts opt from arguments to pass CLI args to the constructors. 
+    See normalization/parameters.py for opt
+    '''
+    
     def __init__(self, opt):
         opt.is_nuke = True
         self.hybrid_norm = HybridSeq2Seq(opt)
@@ -23,6 +28,10 @@ class Nuke:
 
 
 class NukeEvaluator:
+    
+    ''' evaluation class for NUKE, accepts a path to the data, 
+    an instance of class NUKE and a metric
+    '''
     
     def __init__(self, opt, path, nuke, metric):
         self.opt = opt
@@ -105,7 +114,6 @@ def process_btc(opt):
                  
 if __name__ == '__main__':
     
-    # add NUKE and LUKE parameters to imported normalization parameters
     parser.add_argument('-btc_data', type=str, help='path to btc data')
     parser.add_argument('-large_luke', type=lambda x: x in ['true', 'True', '1', 'yes'], default=False,help='decide if you want to transfer large model')
     parser.add_argument('-btc_split_sym', type=str, default='\t', help='operator to split btc data')

@@ -11,6 +11,11 @@ from transformers import LukeTokenizer, LukeForEntitySpanClassification
 
 class LukeLoader:
     
+    '''class to load an instance of LUKE with the transformers library.
+    accepts opt from either normalization/parameters.py or from main -
+    which means that this script is being activated by python3 luke_conll2003.py
+    '''
+    
     def __init__(self, opt):
         pretrained = "studio-ousia/luke-large-finetuned-conll-2003" if opt.large_luke else "studio-ousia/luke-base"
         self.data = opt.btc_data
@@ -274,12 +279,12 @@ class LukeLoader:
 
 if __name__ == '__main__':
     
+    print('start test on LUKE...')
     parser = argparse.ArgumentParser()
     parser.add_argument('-btc_data', type=str, help='set path to data file')
     parser.add_argument('-large_luke', type=lambda x: x in ['true', 'True', '1', 'yes'], default=True,help='decide if you want to transfer large model')
     parser.add_argument('-split_sym', type=str, default='\t', help='set symbol to split data')
     args = parser.parse_args()
-    
-    
     luke = LukeLoader(args)
     luke.inference_raw('Cousin of Reeva Steenkamp says #Pistorius should pay for what he has done . http://t.co/7gSdzwFjJ6')
+    print('test finished.')
