@@ -4,6 +4,8 @@ import csv
 import json
 import re
 
+from torchtext.data.field import Field
+
 from .constants import *
 from collections import defaultdict
 
@@ -11,18 +13,29 @@ class BatchWrapper:
     
     # turn dataset splits into iterators
     
-    def __init__(self, dl: torchtext.data.BucketIterator, x_var: str, y_vars: str):
-        self.dl, self.x_var, self.y_vars = dl, x_var, y_vars
+    def __init__(self, dl: torchtext.data.BucketIterator, x_var: str, y_vars: str, ids: int, id_text_dict):
+        self.dl, self.x_var, self.y_vars, self.ids = dl, x_var, y_vars, ids
+        self.id_text = id_text_dict
 
     def __iter__(self):
         for batch in self.dl:
             dict_batch = {}
+            dict_batch['src_sent_words'] = []
+            dict_batch['tgt_sent_words'] = []
+
+            for i in batch.id:
+                src_words, tgt_words = self.id_text[str(i.item())]
+                dict_batch['src_sent_words'].append(src_words)
+                dict_batch['tgt_sent_words'].append(tgt_words)
+
             src = getattr(batch, self.x_var)
             tgt = getattr(batch, self.y_vars)
+            id = getattr(batch, self.ids)
             src_len = torch.tensor([len([i for i in x if i != 1]) for x in src.T])
             tgt_len = torch.tensor([len([i for i in x if i != 1]) for x in tgt.T])
             dict_batch['src'] = (src, src_len)
             dict_batch['tgt'] = (tgt, tgt_len)
+            dict_batch['id'] = id
             yield dict_batch
 
     def __len__(self):
@@ -124,13 +137,14 @@ class W2VDataLoader:
         self.device = 'cuda:0' if gpu and torch.cuda.is_available() else 'cpu'
         # TODO: make bos and eos appearance separable
         self.mappings = defaultdict(set)
+        self.ID = torchtext.data.Field(sequential=False, use_vocab=False)
         if bos_eos:
             self.SRC = torchtext.data.Field(sequential=True, use_vocab=True, init_token=BOS_WORD, eos_token=EOS_WORD, lower=lowercase)
             self.TGT = torchtext.data.Field(sequential=True, use_vocab=True, init_token=BOS_WORD, eos_token=EOS_WORD)
         else:
             self.SRC = torchtext.data.Field(sequential=True, use_vocab=True)
             self.TGT = torchtext.data.Field(sequential=True, use_vocab=True)  
-        fields = { 'output':('tgt', self.TGT), 'input': ('src', self.SRC)}
+        fields = { 'output':('tgt', self.TGT), 'input': ('src', self.SRC), 'tid' : ('id', self.ID)}
         train, test = torchtext.data.TabularDataset.splits(path=path,
                                                      train=train,
                                                      validation=dev,
@@ -149,9 +163,15 @@ class W2VDataLoader:
         train_iter = torchtext.data.BucketIterator(train, batch_size, sort_within_batch=True,sort=False, train=True, shuffle=True, device=self.device, sort_key=lambda x: len(x.src))
         dev_iter = torchtext.data.BucketIterator(valid, batch_size, sort_within_batch=True, train=True, shuffle=True, device=self.device, sort_key=lambda x: len(x.src))
         test_iter = torchtext.data.BucketIterator(test, batch_size, device=self.device, sort_key=lambda x: len(x.src))
-        self.train_iter = BatchWrapper(train_iter, "src", "tgt")
-        self.dev_iter = BatchWrapper(dev_iter, "src", "tgt")
-        self.test_iter = BatchWrapper(test_iter, "src", "tgt")
+        #get id:text dicts
+        train_id_text = {example.id:(example.src, example.tgt) for example in train_iter.dataset}
+        dev_id_text = {example.id:(example.src, example.tgt) for example in dev_iter.dataset}
+        test_id_text = {example.id:(example.src, example.tgt) for example in test_iter.dataset}
+        
+        id_text = {**train_id_text, **dev_id_text, **test_id_text}
+        self.train_iter = BatchWrapper(train_iter, "src", "tgt", 'id', id_text)
+        self.dev_iter = BatchWrapper(dev_iter, "src", "tgt", 'id', id_text)
+        self.test_iter = BatchWrapper(test_iter, "src", "tgt", 'id', id_text)
         print('\nJSONDataLoader initialized\n')
     
     def extract_mapping(self, train, dev):

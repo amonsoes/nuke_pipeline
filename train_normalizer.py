@@ -111,6 +111,7 @@ def main():
     opt = parser.parse_args()
     opt = change_args(opt)
     opt.is_nuke = False
+    opt.is_inference = False
     logging.basicConfig(filename=os.path.join(opt.save_dir, 'output.log') if opt.logfolder else None, level=logging.INFO)
     if opt.pretrained_emb:
         dloader = W2VDataLoader(path=opt.datapath,
@@ -158,7 +159,7 @@ def main():
         trainer.train(opt.start_epoch, opt.end_epoch)
         logger.info("=======Eval on test set=============")
         pred_file = os.path.join(opt.save_dir, 'test.pred')
-        #test_evaluator.eval(test_data, pred_file=pred_file)
+        test_evaluator.eval(test_data, pred_file=pred_file)
         logger.info("=======Eval on validation set=============")
         pred_file = os.path.join(opt.save_dir, 'valid.pred')
         evaluator.eval(valid_data, pred_file=pred_file)

@@ -102,7 +102,7 @@ To run on GPU, add option -gpu 0
 ### Evaluate the normalizer module
 
 ```bash
-python main.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -phonetic_model ./normalization/phon_model/model_50_phonetic.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -phonetic_data
+python train_normalizer.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -phonetic_model ./normalization/phon_model/model_50_phonetic.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -phonetic_data
 
 ```
 
@@ -113,13 +113,13 @@ To run on GPU, add option -gpu 0
 (1) Train word normalizer with pretrained embeddings trained on Twitter:
 
 ```bash
-python3 main.py -logfolder -save_dir word_model -input word -attention -bias -lowercase -bos -eos -brnn -batch_size 32 -dropout 0.5 -emb_size 200 -end_epoch 50 -layers 3 -learning_rate_decay 0.05 -lr 0.01 -max_grad_norm 5 -rnn_size 200 -rnn_type 'LSTM' -tie_decoder_embeddings -share_embeddings -share_vocab -start_decay_after 15 -teacher_forcing_ratio 0.6  -max_train_decode_len 50 -pretrained_emb True
+python3 train_normalizer.py -logfolder -save_dir word_model -input word -attention -bias -lowercase -bos -eos -brnn -batch_size 32 -dropout 0.5 -emb_size 200 -end_epoch 50 -layers 3 -learning_rate_decay 0.05 -lr 0.01 -max_grad_norm 5 -rnn_size 200 -rnn_type 'LSTM' -tie_decoder_embeddings -share_embeddings -share_vocab -start_decay_after 15 -teacher_forcing_ratio 0.6  -max_train_decode_len 50 -pretrained_emb True
 ```
 
 (2) Download and enrich BTC with syntactic and lexical information
 
 ```bash
-python3 normalize_btc.py
+python3 enrich_btc.py
 ```
 
 This command downloads and transforms the BTC and the TwitIE tagger. For usage requirements concerning the tagger,

@@ -27,7 +27,7 @@ class EncoderRNN(nn.Module):
 
     def forward(self, src, src_lens, hidden=None):
         emb = self.embedding(src)
-        packed_emb = nn.utils.rnn.pack_padded_sequence(emb, src_lens)
+        packed_emb = nn.utils.rnn.pack_padded_sequence(emb, src_lens, enforce_sorted=False)
         packed_outputs, self.hidden = self.rnn(packed_emb, hidden)
         outputs, output_lens =  nn.utils.rnn.pad_packed_sequence(packed_outputs)
         if self.opt.brnn: self.hidden = self._cat_directions(self.hidden)
