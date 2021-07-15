@@ -127,3 +127,10 @@ refer to it's README in the twitie-tagger folder.
 
 Depending in your machine, the lexical and syntactical enriching of the BTC MIGHT TAKE A LONG TIME
 
+### Additional Info
+
+- This code adapts and extends code from the paper "Adapting Sequence to Sequence models for Text Normalization in Social Media"
+- find the original repo: https://github.com/Isminoula/TextNormSeq2Seq
+- the original code is transported from Python 2 to Python 3
+- the original code is not thoroughly documented
+- every added code is thoroughly documented
