@@ -4,20 +4,21 @@ import csv
 import json
 import re
 
-from torchtext.data.field import Field
-
 from .constants import *
 from collections import defaultdict
 
 class BatchWrapper:
     
-    # turn dataset splits into iterators
+    """turn dataset splits into iterators
+    """
     
-    def __init__(self, dl: torchtext.data.BucketIterator, x_var: str, y_vars: str, ids: int, id_text_dict):
+    def __init__(self, dl, x_var, y_vars, ids, id_text_dict):
         self.dl, self.x_var, self.y_vars, self.ids = dl, x_var, y_vars, ids
         self.id_text = id_text_dict
 
     def __iter__(self):
+        """generator method for class object
+        """
         for batch in self.dl:
             dict_batch = {}
             dict_batch['src_sent_words'] = []
@@ -43,6 +44,10 @@ class BatchWrapper:
 
 
 class Preprocessor:
+    
+    """preprocesses tweets from the LexNorm 2015 datasets
+    """
+    
     def __init__(self):
         self.tokens = []
         self.positions = []
@@ -66,6 +71,8 @@ class Preprocessor:
             return True
 
     def filter(self):
+        """replaces urls, hashes and mentions with constants
+        """
         filtered = []
         for pos, token in enumerate(self.tokens):
             if self.isUrl(token):
@@ -91,11 +98,16 @@ class Preprocessor:
 
 class JSONTransformer:
     
+    """imports and transforms the LexNorm dataset
+    """
+    
     def __init__(self, datapath):
         self.path = datapath
         self.fields = self.retrieve_fields_from_json()
     
     def to_tsv(self, path):
+        """turns a json to a tsv file
+        """
         with open(self.path, 'r') as f:
             with open(path, 'wt') as w:
                 dump = json.load(f)
@@ -105,6 +117,8 @@ class JSONTransformer:
                     tsv_writer.writerow([js['tid'], js['index'], js['output'], js['input']])
 
     def test_to_tsv(self, path):
+        """ transforms the test file
+        """
         with open(self.path, 'r') as f:
             with open(path, 'wt') as w:
                 dump = json.load(f)
@@ -114,6 +128,8 @@ class JSONTransformer:
                     tsv_writer.writerow([js['tid'], js['index'], js['input']])
     
     def to_torchtext_JSON(self, path):
+        """ turns the files into the expected format of torchtext
+        """
         processor = Preprocessor()
         with open(self.path, 'r') as f:
             with open(path, 'wt') as w:
@@ -123,7 +139,6 @@ class JSONTransformer:
                     js['output'] = processor.run(js['output'])[0]
                     json.dump(js, w)
                     w.write('\n')
-    
     
     def retrieve_fields_from_json(self):
         with open (self.path, 'r') as f:
@@ -157,8 +172,6 @@ class W2VDataLoader:
         else:
             self.SRC.build_vocab(train, valid, vectors='glove.twitter.27B.200d')
             self.TGT.build_vocab(train)
-        
-        
         self.extract_mapping(train, valid)
         train_iter = torchtext.data.BucketIterator(train, batch_size, sort_within_batch=True,sort=False, train=True, shuffle=True, device=self.device, sort_key=lambda x: len(x.src))
         dev_iter = torchtext.data.BucketIterator(valid, batch_size, sort_within_batch=True, train=True, shuffle=True, device=self.device, sort_key=lambda x: len(x.src))
@@ -175,6 +188,8 @@ class W2VDataLoader:
         print('\nJSONDataLoader initialized\n')
     
     def extract_mapping(self, train, dev):
+        """extracts the translation mapping used by the normalizer
+        """
         for dataset in [train, dev]:
             for example in dataset:
                 for src, tgt in zip(example.src, example.tgt):

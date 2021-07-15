@@ -9,11 +9,16 @@ class BTCSentence:
         self.labels = []
     
     def generate_string(self):
+        """ generate string from word,label paris
+        """
         string = " ".join([word for word,label in self.labels])
         return string
     
 
 class BTCData:
+    
+    """class to enrich BTC data
+    """
     
     def __init__(self, dir):
         self.dir = dir if dir.endswith('/') else dir+'/'

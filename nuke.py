@@ -7,10 +7,10 @@ import os
 
 class Nuke:
     
-    '''loads instance of NUKE with a hybrid normalizer and NER-model LUKE
+    """loads instance of NUKE with a hybrid normalizer and NER-model LUKE
     Init accepts opt from arguments to pass CLI args to the constructors. 
     See normalization/parameters.py for opt
-    '''
+    """
     
     def __init__(self, opt):
         opt.is_nuke = True
@@ -18,11 +18,15 @@ class Nuke:
         self.luke = LukeLoader(opt)
                   
     def inference(self, example):
+        """ performs inference on an example, which contains the sentence tokens
+        """
         example['tokens'] = self.hybrid_norm(example['tokens'])[2][0]
         example['ner_prediction'] = self.luke.inference(example)
         return example
 
     def bypass_inference(self, example):
+        """bypass normalization for inference
+        """
         example['ner_prediction'] = self.luke.inference(example)
         return example
 
@@ -40,6 +44,8 @@ class NukeEvaluator:
         self.example_generator = self.load_examples(path, opt.btc_split_sym)
     
     def load_examples(self, path, split_sym):
+        """load examples from BTC
+        """
         with open(path, 'r') as f:
             tokens, labels, idx = [], [], []
             enum = 0
@@ -61,6 +67,8 @@ class NukeEvaluator:
 
     
     def process_examples(self, bypass=False):
+        """process examples with NUKE with normalization or bypass
+        """
         if bypass:
             for example in self.example_generator:
                 yield self.nuke.bypass_inference(example)
@@ -69,6 +77,8 @@ class NukeEvaluator:
                 yield self.nuke.inference(example)
     
     def get_nuke_scores(self):
+        """use metric class to evaluate
+        """
         for example in self.process_examples():
             try:
                 self.metric(example)
@@ -78,6 +88,8 @@ class NukeEvaluator:
         return self.metric.get_scores()
     
     def get_luke_scores(self):
+        """bypassed eval function 
+        """
         for example in self.process_examples(bypass=True):
             self.metric(example)
         self.metric.build_scores()
@@ -95,6 +107,8 @@ class NukeEvaluator:
                 w.write(f'RECALL: {self.metric.classes[k].recall}\n')
     
 def process_btc(opt):
+    """complete processing function
+    """
     nuke = Nuke(opt)
     opt.is_inference = True
     for _,_, files in os.walk('./datasets/broad_twitter_corpus-master'):

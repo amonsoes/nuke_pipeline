@@ -11,6 +11,8 @@ import normalization.lib as lib
 logger = logging.getLogger("main")
 
 def train_char_model(args):
+    """train the char model or import it for evaluation
+    """
     logger.info('*** Character model ***')
     opt = copy.deepcopy(args)
     opt.input = 'spelling'
@@ -57,6 +59,8 @@ def train_char_model(args):
 
 
 def train_phon_model(args):
+    """train the phonetic model or import it for evaluation
+    """
     logger.info('*** Phonetic model ***')
     opt = copy.deepcopy(args)
     opt.input = 'phonetic'
@@ -108,6 +112,8 @@ def train_phon_model(args):
 
 
 def main():
+    """main function that trains or imports a word model
+    """
     opt = parser.parse_args()
     opt = change_args(opt)
     opt.is_nuke = False

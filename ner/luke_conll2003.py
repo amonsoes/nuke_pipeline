@@ -28,11 +28,15 @@ class LukeLoader:
         self.spacy_nlp = spacy.load("en_core_web_sm")
     
     def evaluate_on_data(self, splitsymbol=' ', batch_size=2):
+        """
+        """
         self.test_documents = self.load_documents(self.data, splitsymbol)
         self.test_examples = self.load_examples(self.test_documents)
         self.test_on_data(batch_size)
         
     def load_documents(self, dataset_file, splitsymbol):
+        """load BTC documents from path and splitsymbol
+        """
         documents, words, labels, sentence_boundaries = [], [], [], []
         with open(dataset_file) as f:
             for line in f:
@@ -69,6 +73,8 @@ class LukeLoader:
 
 
     def load_examples(self, documents):
+        """tokenize documents and turn them into examples
+        """
         examples = []
         max_token_length = 510
         max_mention_length = 30
@@ -157,6 +163,8 @@ class LukeLoader:
 
     @staticmethod
     def is_punctuation(char):
+        """check if a character is in punctuation
+        """
         cp = ord(char)
         if (cp >= 33 and cp <= 47) or (cp >= 58 and cp <= 64) or (cp >= 91 and cp <= 96) or (cp >= 123 and cp <= 126):
             return True
@@ -166,6 +174,8 @@ class LukeLoader:
         return False
 
     def test_on_data(self, batch_size):
+        """perform a test on data with a specific batch size. test adds a predicted IOB sequence to example
+        """
         all_logits = []
 
         for batch_start_idx in trange(0, len(self.test_examples), batch_size):
@@ -207,6 +217,8 @@ class LukeLoader:
 
 
     def inference_raw(self, text):
+        """inference on raw text
+        """
         doc = self.spacy_nlp(text)
 
         entity_spans = []
@@ -244,6 +256,8 @@ class LukeLoader:
             print(token, label)
     
     def inference(self, example):
+        """inference on tokens
+        """
         print(f'processing: {example}\n')
         entity_spans = []
         original_word_spans = []

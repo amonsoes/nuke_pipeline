@@ -26,13 +26,17 @@ class HybridSeq2Seq:
         self.evaluator =lib.train.Evaluator(self.word_model, opt, self.char_model, self.phon_model)
     
     def __call__(self, tokenlist):
+        """applies lexical normalization to a list of tokens
+        """
         tweets = [Tweet(tokenlist, tokenlist, '1', '1') for i in range(2)]
-        test_data, test_vocab, mappings = create_data(tweets, opt=self.opt, vocab=self.vocab, mappings=self.mappings)
+        test_data, _, _ = create_data(tweets, opt=self.opt, vocab=self.vocab, mappings=self.mappings)
         prediction = self.evaluator.eval(test_data)
         return prediction
         
         
     def load_word_model(self, opt):
+        """method to load a word model
+        """
         print('\nloading word model...\n')
         opt = copy.deepcopy(opt)
         opt.is_word_model = True
@@ -47,11 +51,11 @@ class HybridSeq2Seq:
                                         batch_size=opt.batch_size,
                                         gpu=opt.gpu,
                                         valsplit=opt.valsplit)
-                train_data, valid_data, test_data = dloader.return_iterators()
+                _, _, _ = dloader.return_iterators()
                 self.vocab = {'src': dloader.SRC.vocab, 'tgt': dloader.TGT.vocab}
                 self.mappings = dloader.mappings
             else:
-                train_data, valid_data, test_data, self.vocab, self.mappings = lib.data.create_datasets(opt)
+                _, _, _, self.vocab, self.mappings = lib.data.create_datasets(opt)
             model, optim = lib.model.create_model((self.vocab['src'], self.vocab['tgt']), opt)
             print('Loading test data from "%s"' % opt.testdata)
             print('Loading training data from "%s"' % opt.traindata)
@@ -64,11 +68,13 @@ class HybridSeq2Seq:
         return model, optim
     
     def load_char_model(self, opt):
+        """method to load a char model
+        """
         print('\nloading char model...\n')
         opt = copy.deepcopy(opt)
         opt.input = 'spelling'
         if not opt.load_complete_model:
-            train_data, valid_data, test_data, vocab, mappings = lib.data.create_datasets(opt)
+            _, _, _, vocab, _ = lib.data.create_datasets(opt)
             char_model, char_optim = lib.model.create_model((vocab['src'], vocab['tgt']), opt, is_char_model = True)
             print(char_model.opt)
             print('Loading test data for character model from "%s"' % opt.testdata)
@@ -82,6 +88,8 @@ class HybridSeq2Seq:
         return char_model, char_optim
     
     def load_phon_model(self, opt):
+        """method to load a phon model
+        """
         if not opt.phonetic_model:
             return None
         print('\nloading phonetic model...\n')
@@ -91,7 +99,7 @@ class HybridSeq2Seq:
             opt.traindata = 'phonetic_data/' + opt.traindata
             opt.testdata = 'phonetic_data/' + opt.testdata
             print('\n creating data for phonetic model. If no phonetic data is provided, this can take a while...\n')
-            train_data, valid_data, test_data, vocab, mappings = lib.data.create_datasets(opt)
+            _, _, _, vocab, _ = lib.data.create_datasets(opt)
             phon_model, phon_optim = lib.model.create_model((vocab['src'], vocab['tgt']), opt, is_phon_model = True)
             print(phon_model.opt)
             print('Loading test data for phonetic model from "%s"' % opt.testdata)

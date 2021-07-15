@@ -2,6 +2,9 @@ import numpy as np
 
 class ClassMetric:
     
+    """class for one possible label. counts TN,FN,TP,FP for one label
+    """
+    
     def __init__(self, name):
         self.eps = np.finfo(float).eps
         self.label = name
@@ -11,6 +14,8 @@ class ClassMetric:
         self.false_negative = 0
     
     def process_pair(self, label, pred):
+        """processes a label and the prediction to increase its attributes
+        """
         correct = 0
         if self.label == label:
             if self.label == pred:
@@ -36,13 +41,18 @@ class ClassMetric:
 
 class NukeMetric:
     
-    def __init__(self,):
+    """main metric class that governs all ClassMetrics
+    """
+    
+    def __init__(self):
         self.correct = 0
         self.total = 0
         self.classes = {}
         self.possible_labels = ['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'O', 'B-ORG', 'I-ORG']
     
     def __call__(self, example):
+        """evaluates a predicted sequence by comparing it to the gold labels
+        """
         for pred, label in zip(example['ner_prediction'], example['labels']):
             if label not in self.classes.keys():
                 if label in self.possible_labels:

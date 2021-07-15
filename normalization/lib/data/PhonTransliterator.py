@@ -3,6 +3,9 @@ import json
 
 class PhonTransliterator:
     
+    """posesses an instance of epitran to transliterate string to API
+    """
+    
     def __init__(self, preproc=True, postproc=True):
         self.epi = epitran.Epitran('eng-Latn', preproc=preproc, postproc=postproc)
     
@@ -10,6 +13,8 @@ class PhonTransliterator:
         return self.epi.transliterate(string)
     
     def phonetic_dataset(self, inpath, outpath):
+        """transforms an input dataset with character sequences to dataset with API sequences 
+        """
         with open(inpath, 'r') as f:
             with open(outpath, 'w') as w:
                 dump = json.load(f)
