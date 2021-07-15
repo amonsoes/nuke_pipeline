@@ -41,7 +41,7 @@ $ sudo cp lex_lookup /usr/local/bin
 
 When installing on MacOS and other systems that use a BSD version of cp, some modification to a Makefile must be made in order to install flite-2.0.5 (between steps 3 and 4). Edit main/Makefile and change both instances of cp -pd to cp -pR. Then resume the steps above at step 4.
 
-#### Get BTC
+#### Get BTC (already downloaded)
 
 
 ```bash
@@ -49,7 +49,7 @@ cd datasets
 wget https://github.com/GateNLP/broad_twitter_corpus/archive/refs/heads/master.zip
 ```
 
-#### Download the Lexnorm2015 Dataset
+#### Download the Lexnorm2015 Dataset (already downloaded)
 
 ```bash
 cd datasets
@@ -87,8 +87,8 @@ python3 train_normalizer.py -logfolder -save_dir phon_model -gpu 0 -input phonet
 ```bash
 python3 nuke.py -btc_data path/to/data -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True -noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt -lowercase
 ```
-
-To run on GPU, add option -gpu 0
+btc_data should point to local BTC repository.
+To run on GPU, add option -gpu 0.
 
 #### Run LUKE on data
 
@@ -122,7 +122,7 @@ python3 train_normalizer.py -logfolder -save_dir word_model -input word -attenti
 python3 enrich_btc.py
 ```
 
-This command downloads and transforms the BTC and the TwitIE tagger. For usage requirements concerning the tagger,
+This command downloads and transforms the BTC with the TwitIE tagger and a pretrained FLAIR model. For usage requirements concerning the tagger,
 refer to it's README in the twitie-tagger folder.
 
 Depending in your machine, the lexical and syntactical enriching of the BTC MIGHT TAKE A LONG TIME
