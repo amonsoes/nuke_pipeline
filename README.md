@@ -66,7 +66,7 @@ cd ../..
 
 #### Reproduce Experiments
 
-Experiments can be reproduced using the pretrained models in the repository. However, exact reproduction is not always guaranteed.
+Experiments can be reproduced using the pretrained models in the repository. However, exact reproduction is not always guaranteed. To run on GPU, add option -gpu 0
 
 i) Run NUKE on BTC
 
