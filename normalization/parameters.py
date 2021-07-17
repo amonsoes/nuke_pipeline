@@ -48,7 +48,7 @@ parser.add_argument('-teacher_forcing_ratio', type=float, default=0.6,help='Prob
 parser.add_argument('-noise_ratio', type=float, default=0.4,help='% extra noise to add')
 parser.add_argument('-save_complete_model',type= lambda x: x in ['True', 'true', 'yes', '1'], help='bool option to save complete model instead of checkpoint')
 parser.add_argument('-load_complete_model',type= lambda x: x in ['True', 'true', 'yes', '1'], help='bool option to load complete model instead of checkpoint')
-
+parser.add_argument('-is_word_model', type= lambda x: x in ['True', 'true', 'yes', '1'], default=False, help='set if model is word model')
 ## Training
 parser.add_argument('-batch_size', type=int, default=32,help='Training batch size')
 parser.add_argument('-start_epoch', type=int, default=1,help='Epoch to start training.')
