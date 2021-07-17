@@ -17,6 +17,8 @@ $ sudo cp lex_lookup /usr/local/bin
 
 When installing on MacOS and other systems that use a BSD version of cp, some modification to a Makefile must be made in order to install flite-2.0.5 (between steps 3 and 4). Edit main/Makefile and change both instances of cp -pd to cp -pR. Then resume the steps above at step 4.
 
+
+
 ### Training a hybrid Seq2Seq model from scratch 
 The hybrid model is a combination of two or three Seq2Seq models: a word-level one (**S2S**), a secondary character-level trained on pairs of words (spelling with noise augmented data) and a secondary phonological model trained on IPA-transliterated data
 
@@ -38,10 +40,10 @@ python train_normalizer.py -logfolder -save_dir phon_model -gpu 0 -input phoneti
 ### Test hybrid Seq2Seq model
 Evaluate final model (**HS2S**) combining the trained models described above:
 ```bash
-python train_normalizer.py -eval -logfolder -save_dir hybrid_model -gpu 0 -load_from word_model/model_50_word.pt -char_model spelling_model/model_50_spelling.pt -phonetic_model phon_model/model_50_word.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -pretrained_embs
+python train_normalizer.py -eval -logfolder -save_dir hybrid_model -gpu 0 -load_from word_model/model_50_word.pt -char_model spelling_model/model_50_spelling.pt -phonetic_model phon_model/model_50_word.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab
 ```
 
-IMPORTANT NOTE: If you use a pretrained model with the suffix `_w2v`, make sure to set `-pretrained_embs` in the CLI, Otherwise this will result in an embedding_size error while loading the model.
+IMPORTANT NOTE: If you use a pretrained model with the suffix `_pretrainedEmb`, make sure to set `-pretrained_embs` in the CLI, Otherwise this will result in an embedding_size error while loading the model.
 
  
 ### Pretrained models - Reproducibility

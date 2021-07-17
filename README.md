@@ -64,6 +64,42 @@ cd ../..
 
 ## Usage
 
+#### Reproduce Experiments
+
+Experiments can be reproduced using the pretrained models in the repository. However, exact reproduction is not always guaranteed.
+
+i) Run NUKE on BTC
+
+```bash
+python3 nuke.py -btc_data ./datasets/broad_twitter_corpus-master/ -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True -noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt -lowercase
+```
+
+ii) Run LUKE on BTC
+
+```bash
+python3 nuke.py -btc_data ./datasets/broad_twitter_corpus-master/ -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True -noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt -lowercase -bypass
+```
+
+iii) Run Hybrid + Phon Model on LexNorm
+
+```bash
+python3 train_normalizer.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -phonetic_model ./normalization/phon_model/model_50_phonetic.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -phonetic_data
+```
+
+iv) Run Hybrid on LexNorm
+
+```bash
+python3 train_normalizer.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab
+```
+
+v) Run Hybrid + pretrained Embs on LexNorm
+
+```bash
+python3 train_normalizer.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word_pretrainedEmb.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -pretrained_emb True
+```
+
+
+
 #### Train normalizers
 
 The hybrid model is a combination of two or three Seq2Seq models: a word-level one (**S2S**), a secondary character-level trained on pairs of words (spelling with noise augmented data) and a secondary phonological model trained on IPA-transliterated data
@@ -93,7 +129,6 @@ To run on GPU, add option -gpu 0.
 #### Run LUKE on data
 
 ```bash
-cd ner
 python3 nuke.py -btc_data path/to/data -logfolder -save_dir ./normalization/hybrid_model -input hybrid -eval -bos -eos -batch_size 32 -share_vocab -data_augm -large_luke True -noise_ratio 0.1 -char_model ./normalization/spelling_modell/model_50_spelling.pt -load_from=./normalization/word_model/model_50_word.pt -lowercase -bypass
 ```
 
@@ -102,8 +137,7 @@ To run on GPU, add option -gpu 0
 ### Evaluate the normalizer module
 
 ```bash
-python train_normalizer.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -phonetic_model ./normalization/phon_model/model_50_phonetic.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -phonetic_data
-
+python3 train_normalizer.py -eval -logfolder -save_dir hybrid_model -load_from ./normalization/word_model/model_50_word.pt -char_model ./normalization/spelling_modell/model_50_spelling.pt -phonetic_model ./normalization/phon_model/model_50_phonetic.pt -input hybrid -data_augm -noise_ratio 0.1 -lowercase -bos -eos -batch_size 32 -share_vocab -phonetic_data
 ```
 
 To run on GPU, add option -gpu 0
@@ -130,7 +164,7 @@ Depending in your machine, the lexical and syntactical enriching of the BTC MIGH
 ### Additional Info
 
 - This code adapts and extends code from the paper "Adapting Sequence to Sequence models for Text Normalization in Social Media"
-- find the original repo: https://github.com/Isminoula/TextNormSeq2Seq
-- the original code is transported from Python 2 to Python 3
-- the original code is not thoroughly documented
+- find the original repo for the normalizers: https://github.com/Isminoula/TextNormSeq2Seq
+- the original normalizer code is transported from Python 2 to Python 3
+- the original normalizer code is not thoroughly documented
 - every added code is thoroughly documented
