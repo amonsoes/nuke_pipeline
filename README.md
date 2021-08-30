@@ -62,6 +62,20 @@ rm -rf lexnorm2015 lexnorm2015.tgz
 cd ../..
 ```
 
+#### Get pretrained lexical models
+
+i) Word-Model
+
+already included in Repo
+
+ii) Character-Model
+
+download [here](https://drive.google.com/file/d/1VqWamsjJz3VRJZqoigaWkEAknd3yiT4a/view?usp=sharing) and put it in ./normalization/spelling_modell/
+
+iii) Phonetic-Model
+
+download [here](https://drive.google.com/file/d/1QhjXY1yd2dnTssnkriPBPNOmHgRh9VOy/view?usp=sharing) and put it in ./normalization/phon_model/
+
 ## Usage
 
 #### Reproduce Experiments
